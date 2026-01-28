@@ -2166,7 +2166,11 @@ function	GetSDefensiveSkill(myid)
 		htype=GetV(V_HOMUNTYPE,myid)
 		if (htype==BAYERI and UseBayeriGoldenPherze~=0) then
 			skill=MH_GOLDENE_FERSE
-			level = 5
+			if BayeriGoldenPherzeLevel==nil then
+				level=5
+			else
+				level=BayeriGoldenPherzeLevel
+			end
 			skillopt=UseBayeriGoldenPherze
 		elseif	(htype==DIETER and UseDieterGraniticArmor~=0) then
 			skill=MH_GRANITIC_ARMOR

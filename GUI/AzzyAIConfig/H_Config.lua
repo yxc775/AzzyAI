@@ -56,6 +56,7 @@ FilirAccelLevel =1
 AmiBulwarkLevel =5
 UseBayeriAngriffModus	=0
 UseBayeriGoldenPherze	=0
+BayeriGoldenPherzeLevel	=5
 UseDieterMagmaFlow	=0
 UseDieterGraniticArmor	=0
 UseDieterPyroclastic	=0
