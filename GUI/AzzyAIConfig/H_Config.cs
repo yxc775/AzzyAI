@@ -245,6 +245,10 @@ namespace AzzyAIConfig
             {
                 BayeriHailegeStarLevel = Convert.ToInt32(Regex.Match(file, "BayeriHailegeStarLevel\\s*=\\s*-?\\d+", RegexOptions.Multiline).Value.Split('=')[1].Trim());
             }
+            if (Regex.IsMatch(file, "BayeriGoldenPherzeLevel\\s*=\\s*-?\\d+", RegexOptions.Multiline))
+            {
+                BayeriGoldenPherzeLevel = Convert.ToInt32(Regex.Match(file, "BayeriGoldenPherzeLevel\\s*=\\s*-?\\d+", RegexOptions.Multiline).Value.Split('=')[1].Trim());
+            }
             if (Regex.IsMatch(file, "UseSeraParalyze\\s*=\\s*-?\\d+", RegexOptions.Multiline))
             {
                 UseSeraParalyze = Convert.ToInt32(Regex.Match(file, "UseSeraParalyze\\s*=\\s*-?\\d+", RegexOptions.Multiline).Value.Split('=')[1].Trim());
@@ -1448,6 +1452,14 @@ namespace AzzyAIConfig
             {
                 file = string.Format("{1}{0}{2,-25}= {3}", Environment.NewLine, file, "UseBayeriGoldenPherze", UseBayeriGoldenPherze);
             }
+            if (Regex.IsMatch(file, "BayeriGoldenPherzeLevel\\s*=\\s*(\\d+|-\\d+)", RegexOptions.Multiline))
+            {
+                file = Regex.Replace(file, "(BayeriGoldenPherzeLevel\\s*=\\s*)(\\d+|-\\d+)", string.Format("{0,-25}= {1}", "BayeriGoldenPherzeLevel", BayeriGoldenPherzeLevel), RegexOptions.Multiline);
+            }
+            else
+            {
+                file = string.Format("{1}{0}{2,-25}= {3}", Environment.NewLine, file, "BayeriGoldenPherzeLevel", BayeriGoldenPherzeLevel);
+            }
             if (Regex.IsMatch(file, "UseDieterMagmaFlow\\s*=\\s*(\\d+|-\\d+)", RegexOptions.Multiline))
             {
                 file = Regex.Replace(file, "(UseDieterMagmaFlow\\s*=\\s*)(\\d+|-\\d+)", string.Format("{0,-25}= {1}", "UseDieterMagmaFlow", UseDieterMagmaFlow), RegexOptions.Multiline);
@@ -2416,6 +2428,12 @@ namespace AzzyAIConfig
         {
             get { return _UseBayeriGoldenPherze; }
             set { _UseBayeriGoldenPherze = value; }
+        }
+        static int _BayeriGoldenPherzeLevel = 0;
+        public static int BayeriGoldenPherzeLevel
+        {
+            get { return _BayeriGoldenPherzeLevel; }
+            set { _BayeriGoldenPherzeLevel = value; }
         }
         static int _UseDieterMagmaFlow = 0;
         public static int UseDieterMagmaFlow
