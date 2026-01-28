@@ -56,7 +56,7 @@ function doInit(myid)
 		UseEiraXenoSlasher=0
 	end
 	if GetV(V_SKILLATTACKRANGE,myid,MH_STAHL_HORN) == 1 then 
-		if UseBayeriStahlHorn GetV(V_HOMUNTYPE,myid)==BAYERI then
+		if UseBayeriStahlHorn and GetV(V_HOMUNTYPE,myid)==BAYERI then
 			logstring=logstring.."UseBayeriStahlHorn disabled - you don't have the skill!"
 		end
 		UseBayeriStahlHorn=0
