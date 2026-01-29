@@ -2458,12 +2458,17 @@ function DoAutoBuffs(buffmode)
 			else
 				if SteinWandNeedsMove == 1 then
 					local curx,cury=GetV(V_POSITION,MyID)
-					if SteinWandLastCastX ~= nil and SteinWandLastCastY ~= nil and curx == SteinWandLastCastX and cury == SteinWandLastCastY then
-						return
+					local movedSinceLastCast = SteinWandLastCastX == nil
+						or SteinWandLastCastY == nil
+						or curx ~= SteinWandLastCastX
+						or cury ~= SteinWandLastCastY
+					if movedSinceLastCast then
+						SteinWandNeedsMove = 0
 					end
-					SteinWandNeedsMove = 0
 				end
-				if (GetAggroCount(MyID) >= UseSteinWandSelfMob and UseSteinWandSelfMob~=0) or (GetAggroCount(GetV(V_OWNER,MyID)) >= UseSteinWandOwnerMob and UseSteinWandOwnerMob~=0) then
+				if SteinWandNeedsMove == 0
+					and ((GetAggroCount(MyID) >= UseSteinWandSelfMob and UseSteinWandSelfMob~=0)
+						or (GetAggroCount(GetV(V_OWNER,MyID)) >= UseSteinWandOwnerMob and UseSteinWandOwnerMob~=0)) then
 					DoSkill(MH_STEINWAND,BayeriSteinWandLevel,MyID,10)
 					SteinWandTimeout=AutoSkillCastTimeout+GetSkillInfo(MH_STEINWAND,8,BayeriSteinWandLevel)
 					SteinWandLastCastX,SteinWandLastCastY=GetV(V_POSITION,MyID)
