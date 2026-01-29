@@ -2228,6 +2228,35 @@ function DoIdleTasks()
 end
 
 function DoAutoBuffs(buffmode)
+	if UseBayeriSteinWand == 1 and SteinWandTimeout~=-1 then
+		if GetTick() > SteinWandTimeout  then
+			if GetV(V_HOMUNTYPE,MyID)~=BAYERI then
+				SteinWandTimeout=-1
+			else
+				if SteinWandNeedsMove == 1 then
+					local curx,cury=GetV(V_POSITION,MyID)
+					local movedSinceLastCast = SteinWandLastCastX == nil
+						or SteinWandLastCastY == nil
+						or curx ~= SteinWandLastCastX
+						or cury ~= SteinWandLastCastY
+					if movedSinceLastCast then
+						SteinWandNeedsMove = 0
+					end
+				end
+				if SteinWandNeedsMove == 0
+					and ((GetAggroCount(MyID) >= UseSteinWandSelfMob and UseSteinWandSelfMob~=0)
+						or (GetAggroCount(GetV(V_OWNER,MyID)) >= UseSteinWandOwnerMob and UseSteinWandOwnerMob~=0)) then
+					if GetSkillInfo(MH_STEINWAND,3,BayeriSteinWandLevel) <= GetV(V_SP,MyID) then
+						DoSkill(MH_STEINWAND,BayeriSteinWandLevel,MyID,10)
+						SteinWandTimeout=AutoSkillCastTimeout+GetSkillInfo(MH_STEINWAND,8,BayeriSteinWandLevel)
+						SteinWandLastCastX,SteinWandLastCastY=GetV(V_POSITION,MyID)
+						SteinWandNeedsMove = 1
+						return
+					end
+				end
+			end
+		end
+	end
 	if GetTick() < AutoSkillTimeout then
 		return 1
 	end
@@ -2448,33 +2477,6 @@ function DoAutoBuffs(buffmode)
 				SOwnerBuffTimeout = AutoSkillCastTimeout + GetSkillInfo(skill,8,level)
 				UpdateTimeoutFile()
 				return
-			end
-		end
-	end
-	if UseBayeriSteinWand == 1 and SteinWandTimeout~=-1 then
-		if GetTick() > SteinWandTimeout  then
-			if GetV(V_HOMUNTYPE,MyID)~=BAYERI then
-				SteinWandTimeout=-1
-			else
-				if SteinWandNeedsMove == 1 then
-					local curx,cury=GetV(V_POSITION,MyID)
-					local movedSinceLastCast = SteinWandLastCastX == nil
-						or SteinWandLastCastY == nil
-						or curx ~= SteinWandLastCastX
-						or cury ~= SteinWandLastCastY
-					if movedSinceLastCast then
-						SteinWandNeedsMove = 0
-					end
-				end
-				if SteinWandNeedsMove == 0
-					and ((GetAggroCount(MyID) >= UseSteinWandSelfMob and UseSteinWandSelfMob~=0)
-						or (GetAggroCount(GetV(V_OWNER,MyID)) >= UseSteinWandOwnerMob and UseSteinWandOwnerMob~=0)) then
-					DoSkill(MH_STEINWAND,BayeriSteinWandLevel,MyID,10)
-					SteinWandTimeout=AutoSkillCastTimeout+GetSkillInfo(MH_STEINWAND,8,BayeriSteinWandLevel)
-					SteinWandLastCastX,SteinWandLastCastY=GetV(V_POSITION,MyID)
-					SteinWandNeedsMove = 1
-					return
-				end
 			end
 		end
 	end
