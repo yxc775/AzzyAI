@@ -99,10 +99,10 @@ ChaseSPPauseSP 			= -60
 ChaseSPPauseTime         = 3000
 AttackTimeLimit          = 10000
 
-UseBayeriSteinWand       = 0
+UseBayeriSteinWand       = 1
 BayeriSteinWandLevel     = 5
-UseSteinWandSelfMob      = 2
-UseSteinWandOwnerMob     = 2
+UseSteinWandSelfMob      = 1
+UseSteinWandOwnerMob     = 1
 UseSteinWandTele         = 0 
 StienWandTelePause       = 3000
 AssumeHomun              = 1
