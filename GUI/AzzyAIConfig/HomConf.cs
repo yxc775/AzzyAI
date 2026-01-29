@@ -404,6 +404,7 @@ namespace AzzyAIConfig
             _DefensiveBuffOwnerMobbed = Convert.ToInt32(((DefaultValueAttribute)TypeDescriptor.GetProperties(this)["DefensiveBuffOwnerMobbed"].Attributes[typeof(DefaultValueAttribute)]).Value);
             _UseBayeriAngriffModus = (UseBayeriAngriffModusOptions)((DefaultValueAttribute)TypeDescriptor.GetProperties(this)["UseBayeriAngriffModus"].Attributes[typeof(DefaultValueAttribute)]).Value;
             _UseBayeriGoldenPherze = (UseBayeriGoldenPherzeOptions)((DefaultValueAttribute)TypeDescriptor.GetProperties(this)["UseBayeriGoldenPherze"].Attributes[typeof(DefaultValueAttribute)]).Value;
+            _BayeriGoldenPherzeLevel = Convert.ToInt32(((DefaultValueAttribute)TypeDescriptor.GetProperties(this)["BayeriGoldenPherzeLevel"].Attributes[typeof(DefaultValueAttribute)]).Value);
             _UseDieterMagmaFlow = (UseDieterMagmaFlowOptions)((DefaultValueAttribute)TypeDescriptor.GetProperties(this)["UseDieterMagmaFlow"].Attributes[typeof(DefaultValueAttribute)]).Value;
             _UseDieterGraniticArmor = (UseDieterGraniticArmorOptions)((DefaultValueAttribute)TypeDescriptor.GetProperties(this)["UseDieterGraniticArmor"].Attributes[typeof(DefaultValueAttribute)]).Value;
             _UseDieterPyroclastic = (UseDieterPyroclasticOptions)((DefaultValueAttribute)TypeDescriptor.GetProperties(this)["UseDieterPyroclastic"].Attributes[typeof(DefaultValueAttribute)]).Value;
@@ -567,6 +568,7 @@ namespace AzzyAIConfig
             H_Config.DefensiveBuffOwnerMobbed = _DefensiveBuffOwnerMobbed;
             H_Config.UseBayeriAngriffModus = Convert.ToInt32(_UseBayeriAngriffModus);
             H_Config.UseBayeriGoldenPherze = Convert.ToInt32(_UseBayeriGoldenPherze);
+            H_Config.BayeriGoldenPherzeLevel = _BayeriGoldenPherzeLevel;
             H_Config.UseDieterMagmaFlow = Convert.ToInt32(_UseDieterMagmaFlow);
             H_Config.UseDieterGraniticArmor = Convert.ToInt32(_UseDieterGraniticArmor);
             H_Config.UseDieterPyroclastic = Convert.ToInt32(_UseDieterPyroclastic);
@@ -731,6 +733,7 @@ namespace AzzyAIConfig
             _DefensiveBuffOwnerMobbed = H_Config.DefensiveBuffOwnerMobbed;
             _UseBayeriAngriffModus = (UseBayeriAngriffModusOptions)H_Config.UseBayeriAngriffModus;
             _UseBayeriGoldenPherze = (UseBayeriGoldenPherzeOptions)H_Config.UseBayeriGoldenPherze;
+            _BayeriGoldenPherzeLevel = H_Config.BayeriGoldenPherzeLevel;
             _UseDieterMagmaFlow = (UseDieterMagmaFlowOptions)H_Config.UseDieterMagmaFlow;
             _UseDieterGraniticArmor = (UseDieterGraniticArmorOptions)H_Config.UseDieterGraniticArmor;
             _UseDieterPyroclastic = (UseDieterPyroclasticOptions)H_Config.UseDieterPyroclastic;
@@ -2627,6 +2630,33 @@ namespace AzzyAIConfig
         {
             get { return _UseBayeriGoldenPherze; }
             set { _UseBayeriGoldenPherze = value; }
+        }
+
+        int _BayeriGoldenPherzeLevel = 5;
+        [Category("Autobuff Options"),
+        Description(
+            "Use this level of Golden Pherze. Overridden by skill tactics" +
+            "unless MobSkillFixedLevel is enabled"
+            ),
+        DefaultValue(5)]
+        public int BayeriGoldenPherzeLevel
+        {
+            get { return _BayeriGoldenPherzeLevel; }
+            set
+            {
+                if (value < 1)
+                {
+                    _BayeriGoldenPherzeLevel = 1;
+                }
+                else if (value > 5)
+                {
+                    _BayeriGoldenPherzeLevel = 5;
+                }
+                else
+                {
+                    _BayeriGoldenPherzeLevel = value;
+                }
+            }
         }
 
         UseDieterMagmaFlowOptions _UseDieterMagmaFlow = UseDieterMagmaFlowOptions.Never;

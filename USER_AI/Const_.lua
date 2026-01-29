@@ -13,7 +13,7 @@ function	GetMsg (id) end
 function	GetResMsg (id) end
 function	SkillObject (id,level,skill,target) end
 function	SkillGround (id,level,skill,x,y) end
-function	IsMonster (id) end								-- id´Â ¸ó½ºÅÍÀÎ°¡? yes -> 1 no -> 0
+function	IsMonster (id) end								-- idÂ´Ã‚ Â¸Ã³Â½ÂºÃ…ÃÃ€ÃŽÂ°Â¡? yes -> 1 no -> 0
 
 --]]
 --GetV() first argument--
@@ -440,6 +440,9 @@ OffensiveOwnerTimeout	= 0
 DefensiveOwnerTimeout	= 0
 OtherOwnerTimeout		= 0
 SteinWandTimeout		= 0
+SteinWandLastCastX		= nil
+SteinWandLastCastY		= nil
+SteinWandNeedsMove		= 0
 AutoSkillTimeout		= 0 --Cast time + delay timeout
 AttackTimeout			= 0 --for AttackTimeLimit
 AutoSkillCastTimeout	= 0 --Cast time timeout
