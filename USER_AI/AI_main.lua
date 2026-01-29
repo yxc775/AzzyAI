@@ -2451,7 +2451,7 @@ function DoAutoBuffs(buffmode)
 			end
 		end
 	end
-	if UseBayeriSteinWand == buffmode and SteinWandTimeout~=-1 then
+	if UseBayeriSteinWand == 1 and SteinWandTimeout~=-1 then
 		if GetTick() > SteinWandTimeout  then
 			if GetV(V_HOMUNTYPE,MyID)~=BAYERI then
 				SteinWandTimeout=-1
