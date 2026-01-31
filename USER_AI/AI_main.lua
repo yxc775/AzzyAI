@@ -576,6 +576,19 @@ function	OnFOLLOW_ST ()
 			return OnIDLE_ST()
 		end
 	else
+		if GetV(V_MOTION,MyID) == MOTION_MOVE
+			and (GetTick() - LastMovedTime) > MoveStuckTimeout
+			and GetTick() > MoveRetryTimeout then
+			if ReturnToMoveHold==0 then
+				BetterMoveToOwner(MyID,FollowStayBack)
+			else
+				BetterMoveToLoc(MyID,FollowStayBack,StickyX,StickyY)
+			end
+			MoveRetryTimeout = GetTick() + MoveRetryDelay
+			FollowTryCount=FollowTryCount+1
+			TraceAI("FOLLOW_ST: Stuck while moving, reissued move command")
+			return
+		end
 		if (FollowTryCount > FollowTryPanic and GetV(V_MOTION,MyID)~=MOTION_MOVE) then
 			if FollowTryCount > 2*FollowTryPanic then
 				if FollowTryCount > 3*FollowTryPanic then 
@@ -1687,6 +1700,12 @@ function	OnMOVE_CMD_ST ()
 	elseif GetV(V_MOTION,MyID) == MOTION_STAND or MyDestX~=MyMoveX or MyDestY~=MyMoveY then
 		MyDestX,MyDestY=MyMoveX,MyMoveY
 		Move(MyID,MyDestX,MyDestY)
+	elseif GetV(V_MOTION,MyID) == MOTION_MOVE
+		and (GetTick() - LastMovedTime) > MoveStuckTimeout
+		and GetTick() > MoveRetryTimeout then
+		MoveRetryTimeout = GetTick() + MoveRetryDelay
+		TraceAI("OnMOVE_CMD_ST: Stuck while moving, reissued move command")
+		Move(MyID,MyMoveX,MyMoveY)
 	end
 end
 
