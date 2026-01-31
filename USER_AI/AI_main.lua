@@ -2267,7 +2267,7 @@ function DoAutoBuffs(buffmode)
 						or (GetAggroCount(GetV(V_OWNER,MyID)) >= UseSteinWandOwnerMob and UseSteinWandOwnerMob~=0)) then
 					if GetSkillInfo(MH_STEINWAND,3,BayeriSteinWandLevel) <= GetV(V_SP,MyID) then
 						DoSkill(MH_STEINWAND,BayeriSteinWandLevel,MyID,10)
-						SteinWandTimeout=AutoSkillCastTimeout+GetSkillInfo(MH_STEINWAND,8,BayeriSteinWandLevel)
+						SteinWandTimeout=GetSkillInfo(MH_STEINWAND,8,BayeriSteinWandLevel)
 						SteinWandLastCastX,SteinWandLastCastY=GetV(V_POSITION,MyID)
 						SteinWandNeedsMove = 1
 						return
