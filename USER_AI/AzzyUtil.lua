@@ -2547,7 +2547,11 @@ function DoSkill(skill,level,target,mode,targx,targy)
 	delay=AutoSkillDelay + GetSkillInfo(skill,4,level)+GetSkillInfo(skill,5,level)*CastTimeRatio
 	AutoSkillCastTimeout=delay+t
 	if AutoSkillCooldown[skill]~=nil then
-		AutoSkillCooldown[skill]=t+GetSkillInfo(skill,9,level)+delay
+		local cooldown=GetSkillInfo(skill,9,level)
+		if skill==MH_HEILIGE_STANGE then
+			cooldown=GetSkillInfo(skill,6,level)
+		end
+		AutoSkillCooldown[skill]=t+cooldown+delay
 	elseif (skill==MH_VOLCANIC_ASH) then --handle the three ash timeouts
 		if (AshTimeout[1] < t) then
 			AshTimeout[1]=t+GetSkillInfo(skill,9,level)+delay
@@ -2557,7 +2561,9 @@ function DoSkill(skill,level,target,mode,targx,targy)
 			AshTimeout[3]=t+GetSkillInfo(skill,9,level)+delay
 		end
 	end
-	delay = delay + GetSkillInfo(skill,6,level)
+	if skill~=MH_HEILIGE_STANGE then
+		delay = delay + GetSkillInfo(skill,6,level)
+	end
 	AutoSkillTimeout=t+delay
 	if AutoSkillCooldown[skill]~=nil then
 		TraceAI("DoSkill: "..skill.." level:"..level.." target:"..target.." mode:"..targetmode.." delay "..delay.." cooldown: "..AutoSkillCooldown[skill]-GetTick())
