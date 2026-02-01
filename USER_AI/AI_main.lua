@@ -17,6 +17,7 @@ AutoSkillCooldown[MH_POISON_MIST]=0
 AutoSkillCooldown[MH_LAVA_SLIDE]=0
 AutoSkillCooldown[MH_STEINWAND]=0 	
 AutoSkillCooldown[MH_SUMMON_LEGION]=0
+AutoSkillCooldown[MH_HEILIGE_STANGE]=0
 -----------Config checking----------------
 
 function doInit(myid)
