@@ -559,6 +559,9 @@ end
 function	OnFOLLOW_ST ()
 
 	TraceAI ("OnFOLLOW_ST - follow try count: "..FollowTryCount.." ownerpos: "..formatpos(GetV(V_POSITION,GetV(V_OWNER,MyID))).."my pos history:"..formatmypos(10))
+	if GetV(V_MOTION,MyID) == MOTION_CASTING then
+		return
+	end
 	local dist = GetDistanceFromOwner(MyID)
 	if dist > GetMoveBounds() then 
 		ReturnToMoveHold = 0
@@ -1677,6 +1680,9 @@ end
 function	OnMOVE_CMD_ST ()
 
 	TraceAI ("OnMOVE_CMD_ST")
+	if GetV(V_MOTION,MyID) == MOTION_CASTING then
+		return
+	end
 	if GetDistanceAPR(GetV(V_OWNER,MyID),MyMoveX,MyMoveY) > 15 then
 		TraceAI("OnMOVE_CMD_ST -> IDLE_ST: Attempt to move to location off screen")
 		logappend("AAI_ERROR","We were in MOVE_CMD_ST trying to move to "..formatpos(MyMoveX,MyMoveY).." while owner standing at "..formatpos(GetV(V_POSITION,GetV(V_OWNER,MyID))))
