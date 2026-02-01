@@ -824,27 +824,31 @@ function	OnCHASE_ST ()
 		for i,v in ipairs(SkillList) do
 
 			skilltype=v[1]
-			if v[2]~=0 then
-				if IsInAttackSight(MyID,MyEnemy,v[2],v[3])==true then
-					if (skilltype == MOB_ATK and UseHomunSSkillChase==1 and AutoMobMode~=0  and (MySkillUsedCount < tact_skill or tact_skill==SKILL_ALWAYS or (BerserkMode==1 and Berserk_SkillAlways==1))) then
-						local mobskill_level=skill_level
-						if AoEFixedLevel == 1 then
-							mobskill_level=v[3]
-						end
-						local mobmode=0
-						if AutoMobMode==2 then
-							mobmode=1
-						end
-						mobskillcount=GetMobCount(v[2],math.min(v[3],mobskill_level),MyEnemy,mobmode)
-						--TraceAI("mobskillcount="..mobskillcount.."tact_skillclass="..tact_skillclass.."class_mob="..CLASS_MOB.."AutoMobCount="..AutoMobCount.." "..FormatSkill(v[2],math.min(v[3],mobskill_level)))
-						if (mobskillcount >= AutoMobCount or tact_skillclass == CLASS_MOB) then
-							if (availsp >= GetSkillInfo(v[2],3,math.min(v[3],mobskill_level)))then
-								if (skilltouse[1] < 2) then
-									skilltouse=v
+				if v[2]~=0 then
+					if IsInAttackSight(MyID,MyEnemy,v[2],v[3])==true then
+						local bayeriMobbedPriority = (v[2] == MH_HEILIGE_STANGE
+							and UseBayeriHailegeStarSelfMob ~= 0
+							and GetV(V_HOMUNTYPE,MyID) == BAYERI
+							and GetAggroCount(MyID) >= UseBayeriHailegeStarSelfMob)
+						if (skilltype == MOB_ATK and UseHomunSSkillChase==1 and (AutoMobMode~=0 or bayeriMobbedPriority) and (MySkillUsedCount < tact_skill or tact_skill==SKILL_ALWAYS or (BerserkMode==1 and Berserk_SkillAlways==1))) then
+							local mobskill_level=skill_level
+							if AoEFixedLevel == 1 then
+								mobskill_level=v[3]
+							end
+							local mobmode=0
+							if AutoMobMode==2 then
+								mobmode=1
+							end
+							mobskillcount=GetMobCount(v[2],math.min(v[3],mobskill_level),MyEnemy,mobmode)
+							--TraceAI("mobskillcount="..mobskillcount.."tact_skillclass="..tact_skillclass.."class_mob="..CLASS_MOB.."AutoMobCount="..AutoMobCount.." "..FormatSkill(v[2],math.min(v[3],mobskill_level)))
+							if (mobskillcount >= AutoMobCount or tact_skillclass == CLASS_MOB or bayeriMobbedPriority) then
+								if (availsp >= GetSkillInfo(v[2],3,math.min(v[3],mobskill_level)))then
+									if (skilltouse[1] < 2) then
+										skilltouse=v
+									end
 								end
 							end
-						end
-					elseif (skilltype ==DEBUFF_ATK and ChaseDebuffUsed==0) then
+						elseif (skilltype ==DEBUFF_ATK and ChaseDebuffUsed==0) then
 							if (tact_debuff*-1 == v[2] or (tact_debuff==-1 and BasicDebuffs[v[2]]~=nil)) then
 								if (availsp-ReserveSP >= GetSkillInfo(v[2],3,math.min(v[3],skill_level))) then
 									skilltouse=v
@@ -1148,60 +1152,64 @@ function OnATTACK_ST ()
 			if BerserkMode~=1 or Berserk_IgnoreMinSP ~=1 then
 				availsp = availsp - tact_sp
 			end
-			for i,v in ipairs(SkillList) do
-				skilltype=v[1]
-				TraceAI("skilltype ".. skilltype.." MySkillUsedCount "..MySkillUsedCount.." tact_skill ".. tact_skill.." tact_skillclass"..tact_skillclass.."v"..v[1].." "..v[2].." "..v[3])		
-				if v[2]~=0 then
-					if IsInAttackSight(MyID,MyEnemy,v[2],v[3])==true then
-						if (skilltype == MOB_ATK and UseHomunSSkillAttack==1 and AutoMobMode~=0 and (MySkillUsedCount < tact_skill or tact_skill==SKILL_ALWAYS or (BerserkMode==1 and Berserk_SkillAlways==1))) then
-							local mobskill_level=skill_level
-							if AoEFixedLevel == 1 then
-								mobskill_level=v[3]
-							end
-							local mobmode=0
-							if AutoMobMode==2 then
-								mobmode=1
-							end
-							mobskillcount=GetMobCount(v[2],math.min(v[3],mobskill_level),MyEnemy,mobmode)
-							--TraceAI("mobskillcount="..mobskillcount.."tact_skillclass="..tact_skillclass.."class_mob="..CLASS_MOB.."AutoMobCount="..AutoMobCount.." "..FormatSkill(v[2],math.min(v[3],mobskill_level)))
-							if (mobskillcount >= AutoMobCount or tact_skillclass == CLASS_MOB) then
-								if (availsp >= GetSkillInfo(v[2],3,math.min(v[3],mobskill_level)))then
-									if (skilltouse[1] < 2) then
+				for i,v in ipairs(SkillList) do
+					skilltype=v[1]
+					TraceAI("skilltype ".. skilltype.." MySkillUsedCount "..MySkillUsedCount.." tact_skill ".. tact_skill.." tact_skillclass"..tact_skillclass.."v"..v[1].." "..v[2].." "..v[3])		
+					if v[2]~=0 then
+						if IsInAttackSight(MyID,MyEnemy,v[2],v[3])==true then
+							local bayeriMobbedPriority = (v[2] == MH_HEILIGE_STANGE
+								and UseBayeriHailegeStarSelfMob ~= 0
+								and GetV(V_HOMUNTYPE,MyID) == BAYERI
+								and GetAggroCount(MyID) >= UseBayeriHailegeStarSelfMob)
+							if (skilltype == MOB_ATK and UseHomunSSkillAttack==1 and (AutoMobMode~=0 or bayeriMobbedPriority) and (MySkillUsedCount < tact_skill or tact_skill==SKILL_ALWAYS or (BerserkMode==1 and Berserk_SkillAlways==1))) then
+								local mobskill_level=skill_level
+								if AoEFixedLevel == 1 then
+									mobskill_level=v[3]
+								end
+								local mobmode=0
+								if AutoMobMode==2 then
+									mobmode=1
+								end
+								mobskillcount=GetMobCount(v[2],math.min(v[3],mobskill_level),MyEnemy,mobmode)
+								--TraceAI("mobskillcount="..mobskillcount.."tact_skillclass="..tact_skillclass.."class_mob="..CLASS_MOB.."AutoMobCount="..AutoMobCount.." "..FormatSkill(v[2],math.min(v[3],mobskill_level)))
+								if (mobskillcount >= AutoMobCount or tact_skillclass == CLASS_MOB or bayeriMobbedPriority) then
+									if (availsp >= GetSkillInfo(v[2],3,math.min(v[3],mobskill_level)))then
+										if (skilltouse[1] < 2) then
+											skilltouse=v
+										end
+									end
+								end
+							elseif (skilltype ==DEBUFF_ATK and AttackDebuffUsed < AttackDebuffLimit and (IsFriendOrSelf(GetV(V_TARGET,MyEnemy))==1 or AttackDebuffWhenAttacked~=1)) then
+								if (tact_debuff == v[2] or (tact_debuff==1 and BasicDebuffs[v[2]]~=nil)) then
+									if (availsp-ReserveSP >= GetSkillInfo(v[2],3,math.min(v[3],skill_level))) then
 										skilltouse=v
 									end
 								end
-							end
-						elseif (skilltype ==DEBUFF_ATK and AttackDebuffUsed < AttackDebuffLimit and (IsFriendOrSelf(GetV(V_TARGET,MyEnemy))==1 or AttackDebuffWhenAttacked~=1)) then
-							if (tact_debuff == v[2] or (tact_debuff==1 and BasicDebuffs[v[2]]~=nil)) then
+							elseif (skilltype==MAIN_ATK and (MySkillUsedCount < tact_skill or tact_skill==SKILL_ALWAYS or (BerserkMode==1 and Berserk_SkillAlways==1)) and (tact_skillclass < 1 or tact_skillclass==CLASS_MIN_OLD )) then
+								if (availsp-ReserveSP >= GetSkillInfo(v[2],3,math.min(v[3],skill_level))) then
+									skilltouse=v
+								end
+							elseif (skilltype==S_ATK and UseHomunSSkillAttack==1 and (MySkillUsedCount < tact_skill or tact_skill==SKILL_ALWAYS or (BerserkMode==1 and Berserk_SkillAlways==1)) and (tact_skillclass==CLASS_S or tact_skillclass==CLASS_BOTH or tact_skillclass==CLASS_MIN_S or ((tact_skillclass==CLASS_COMBO_1 or tact_skillclass==CLASS_COMBO_2) and v[2]==MH_SONIC_CLAW))) then
+								if (availsp-ReserveSP >= GetSkillInfo(v[2],3,math.min(v[3],skill_level))) then
+									skilltouse=v
+								end
+							elseif (skilltype==COMBO_ATK and UseHomunSSkillAttack==1 and (AutoComboMode==2 or (AutoComboMode==1 and (tact_skillclass == CLASS_COMBO_1 or tact_skillclass==CLASS_COMBO_2)) or Berserk_ComboAlways==1) and (MySkillUsedCount < tact_skill or tact_skill==SKILL_ALWAYS or (BerserkMode==1 and Berserk_SkillAlways==1)) and (v[2] == MH_SILVERVEIN_RUSH or tact_skillclass~=CLASS_COMBO_1)) then
+								if (availsp-ReserveSP >= GetSkillInfo(v[2],3,math.min(v[3],skill_level))) then
+									skilltouse=v
+								end
+							elseif (skilltype==GRAPPLE_ATK and UseHomunSSkillAttack==1 and (AutoComboMode==2 or (AutoComboMode==1 and tact_skillclass > 5) or Berserk_ComboAlways==1) and (MySkillUsedCount < tact_skill or tact_skill==SKILL_ALWAYS or (BerserkMode==1 and Berserk_SkillAlways==1)) and (v[2] == MH_TINDER_BREAKER or (v[2]==MH_CBC and tact_skillclass~=CLASS_GRAPPLE) or tact_skillclass==CLASS_GRAPPLE_2 )) then
+								if (availsp-ReserveSP >= GetSkillInfo(v[2],3,math.min(v[3],skill_level))) then
+									skilltouse=v
+								end
+							elseif (skilltype==MINION_ATK and UseHomunSSkillAttack==1 and (MySkillUsedCount < tact_skill or tact_skill==SKILL_ALWAYS or (BerserkMode==1 and Berserk_SkillAlways==1)) and (tact_skillclass==CLASS_MINION or tact_skillclass==CLASS_MIN_OLD or tact_skillclass==CLASS_MIN_S)) then
 								if (availsp-ReserveSP >= GetSkillInfo(v[2],3,math.min(v[3],skill_level))) then
 									skilltouse=v
 								end
 							end
-						elseif (skilltype==MAIN_ATK and (MySkillUsedCount < tact_skill or tact_skill==SKILL_ALWAYS or (BerserkMode==1 and Berserk_SkillAlways==1)) and (tact_skillclass < 1 or tact_skillclass==CLASS_MIN_OLD )) then
-							if (availsp-ReserveSP >= GetSkillInfo(v[2],3,math.min(v[3],skill_level))) then
-								skilltouse=v
-							end
-						elseif (skilltype==S_ATK and UseHomunSSkillAttack==1 and (MySkillUsedCount < tact_skill or tact_skill==SKILL_ALWAYS or (BerserkMode==1 and Berserk_SkillAlways==1)) and (tact_skillclass==CLASS_S or tact_skillclass==CLASS_BOTH or tact_skillclass==CLASS_MIN_S or ((tact_skillclass==CLASS_COMBO_1 or tact_skillclass==CLASS_COMBO_2) and v[2]==MH_SONIC_CLAW))) then
-							if (availsp-ReserveSP >= GetSkillInfo(v[2],3,math.min(v[3],skill_level))) then
-								skilltouse=v
-							end
-						elseif (skilltype==COMBO_ATK and UseHomunSSkillAttack==1 and (AutoComboMode==2 or (AutoComboMode==1 and (tact_skillclass == CLASS_COMBO_1 or tact_skillclass==CLASS_COMBO_2)) or Berserk_ComboAlways==1) and (MySkillUsedCount < tact_skill or tact_skill==SKILL_ALWAYS or (BerserkMode==1 and Berserk_SkillAlways==1)) and (v[2] == MH_SILVERVEIN_RUSH or tact_skillclass~=CLASS_COMBO_1)) then
-							if (availsp-ReserveSP >= GetSkillInfo(v[2],3,math.min(v[3],skill_level))) then
-								skilltouse=v
-							end
-						elseif (skilltype==GRAPPLE_ATK and UseHomunSSkillAttack==1 and (AutoComboMode==2 or (AutoComboMode==1 and tact_skillclass > 5) or Berserk_ComboAlways==1) and (MySkillUsedCount < tact_skill or tact_skill==SKILL_ALWAYS or (BerserkMode==1 and Berserk_SkillAlways==1)) and (v[2] == MH_TINDER_BREAKER or (v[2]==MH_CBC and tact_skillclass~=CLASS_GRAPPLE) or tact_skillclass==CLASS_GRAPPLE_2 )) then
-							if (availsp-ReserveSP >= GetSkillInfo(v[2],3,math.min(v[3],skill_level))) then
-								skilltouse=v
-							end
-						elseif (skilltype==MINION_ATK and UseHomunSSkillAttack==1 and (MySkillUsedCount < tact_skill or tact_skill==SKILL_ALWAYS or (BerserkMode==1 and Berserk_SkillAlways==1)) and (tact_skillclass==CLASS_MINION or tact_skillclass==CLASS_MIN_OLD or tact_skillclass==CLASS_MIN_S)) then
-							if (availsp-ReserveSP >= GetSkillInfo(v[2],3,math.min(v[3],skill_level))) then
-								skilltouse=v
-							end
 						end
 					end
+					TraceAI("skill selected "..skilltouse[2])
 				end
-				TraceAI("skill selected "..skilltouse[2])
-			end
 		end
 		-- Now we finalize the selection
 		if skilltouse[1]~= -1 then
@@ -1249,7 +1257,7 @@ function OnATTACK_ST ()
 				SkillTarget=target
 			end
 			TraceAI("Skill Attack: "..MySkill.." (brandish) target: "..SkillTarget.." enemy: "..MyEnemy)
-		elseif (MySkill==MH_HAILAGE_STAR or MySkill==MS_BOWLING_BASH) and AoEMaximizeTargets==1 then 
+		elseif (MySkill==MH_HEILIGE_STANGE or MySkill==MS_BOWLING_BASH) and AoEMaximizeTargets==1 then 
 			target=GetBestAoETarget(MyID,MySkill,MySkillLevel)
 			if target~=-1 then
 				SkillTarget=target
