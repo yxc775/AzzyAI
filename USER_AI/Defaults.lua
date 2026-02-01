@@ -72,6 +72,7 @@ UseBayeriStahlHorn			=1
 BayeriStahlHornLevel		=5
 UseBayeriHailegeStar		=1
 BayeriHailegeStarLevel		=5
+UseBayeriHailegeStarSelfMob	=0
 UseBayeriSteinWand			=0
 BayeriSteinWandLevel		=5
 UseSteinWandSelfMob			=2

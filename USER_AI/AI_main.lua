@@ -826,18 +826,22 @@ function	OnCHASE_ST ()
 			skilltype=v[1]
 			if v[2]~=0 then
 				if IsInAttackSight(MyID,MyEnemy,v[2],v[3])==true then
-					if (skilltype == MOB_ATK and UseHomunSSkillChase==1 and AutoMobMode~=0  and (MySkillUsedCount < tact_skill or tact_skill==SKILL_ALWAYS or (BerserkMode==1 and Berserk_SkillAlways==1))) then
-						local mobskill_level=skill_level
-						if AoEFixedLevel == 1 then
-							mobskill_level=v[3]
-						end
-						local mobmode=0
+						if (skilltype == MOB_ATK and UseHomunSSkillChase==1 and AutoMobMode~=0  and (MySkillUsedCount < tact_skill or tact_skill==SKILL_ALWAYS or (BerserkMode==1 and Berserk_SkillAlways==1))) then
+							local mobskill_level=skill_level
+							if AoEFixedLevel == 1 then
+								mobskill_level=v[3]
+							end
+							local mobmode=0
 						if AutoMobMode==2 then
 							mobmode=1
 						end
 						mobskillcount=GetMobCount(v[2],math.min(v[3],mobskill_level),MyEnemy,mobmode)
+						local bayeriMobbedPriority = (v[2] == MH_HEILIGE_STANGE
+							and UseBayeriHailegeStarSelfMob ~= 0
+							and GetV(V_HOMUNTYPE,MyID) == BAYERI
+							and GetAggroCount(MyID) >= UseBayeriHailegeStarSelfMob)
 						--TraceAI("mobskillcount="..mobskillcount.."tact_skillclass="..tact_skillclass.."class_mob="..CLASS_MOB.."AutoMobCount="..AutoMobCount.." "..FormatSkill(v[2],math.min(v[3],mobskill_level)))
-						if (mobskillcount >= AutoMobCount or tact_skillclass == CLASS_MOB) then
+						if (mobskillcount >= AutoMobCount or tact_skillclass == CLASS_MOB or bayeriMobbedPriority) then
 							if (availsp >= GetSkillInfo(v[2],3,math.min(v[3],mobskill_level)))then
 								if (skilltouse[1] < 2) then
 									skilltouse=v
@@ -1163,8 +1167,12 @@ function OnATTACK_ST ()
 								mobmode=1
 							end
 							mobskillcount=GetMobCount(v[2],math.min(v[3],mobskill_level),MyEnemy,mobmode)
+							local bayeriMobbedPriority = (v[2] == MH_HEILIGE_STANGE
+								and UseBayeriHailegeStarSelfMob ~= 0
+								and GetV(V_HOMUNTYPE,MyID) == BAYERI
+								and GetAggroCount(MyID) >= UseBayeriHailegeStarSelfMob)
 							--TraceAI("mobskillcount="..mobskillcount.."tact_skillclass="..tact_skillclass.."class_mob="..CLASS_MOB.."AutoMobCount="..AutoMobCount.." "..FormatSkill(v[2],math.min(v[3],mobskill_level)))
-							if (mobskillcount >= AutoMobCount or tact_skillclass == CLASS_MOB) then
+							if (mobskillcount >= AutoMobCount or tact_skillclass == CLASS_MOB or bayeriMobbedPriority) then
 								if (availsp >= GetSkillInfo(v[2],3,math.min(v[3],mobskill_level)))then
 									if (skilltouse[1] < 2) then
 										skilltouse=v
@@ -1249,7 +1257,7 @@ function OnATTACK_ST ()
 				SkillTarget=target
 			end
 			TraceAI("Skill Attack: "..MySkill.." (brandish) target: "..SkillTarget.." enemy: "..MyEnemy)
-		elseif (MySkill==MH_HAILAGE_STAR or MySkill==MS_BOWLING_BASH) and AoEMaximizeTargets==1 then 
+		elseif (MySkill==MH_HEILIGE_STANGE or MySkill==MS_BOWLING_BASH) and AoEMaximizeTargets==1 then 
 			target=GetBestAoETarget(MyID,MySkill,MySkillLevel)
 			if target~=-1 then
 				SkillTarget=target

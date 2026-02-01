@@ -358,6 +358,7 @@ namespace AzzyAIConfig
             _BayeriStahlHornLevel = Convert.ToInt32(((DefaultValueAttribute)TypeDescriptor.GetProperties(this)["BayeriStahlHornLevel"].Attributes[typeof(DefaultValueAttribute)]).Value);
             _UseBayeriHailegeStar = Convert.ToBoolean(((DefaultValueAttribute)TypeDescriptor.GetProperties(this)["UseBayeriHailegeStar"].Attributes[typeof(DefaultValueAttribute)]).Value);
             _BayeriHailegeStarLevel = Convert.ToInt32(((DefaultValueAttribute)TypeDescriptor.GetProperties(this)["BayeriHailegeStarLevel"].Attributes[typeof(DefaultValueAttribute)]).Value);
+            _UseBayeriHailegeStarSelfMob = Convert.ToInt32(((DefaultValueAttribute)TypeDescriptor.GetProperties(this)["UseBayeriHailegeStarSelfMob"].Attributes[typeof(DefaultValueAttribute)]).Value);
             _UseSeraParalyze = Convert.ToBoolean(((DefaultValueAttribute)TypeDescriptor.GetProperties(this)["UseSeraParalyze"].Attributes[typeof(DefaultValueAttribute)]).Value);
             _SeraParalyzeLevel = Convert.ToInt32(((DefaultValueAttribute)TypeDescriptor.GetProperties(this)["SeraParalyzeLevel"].Attributes[typeof(DefaultValueAttribute)]).Value);
             _UseSeraPoisonMist = Convert.ToBoolean(((DefaultValueAttribute)TypeDescriptor.GetProperties(this)["UseSeraPoisonMist"].Attributes[typeof(DefaultValueAttribute)]).Value);
@@ -520,6 +521,7 @@ namespace AzzyAIConfig
             H_Config.BayeriStahlHornLevel = _BayeriStahlHornLevel;
             H_Config.UseBayeriHailegeStar = Convert.ToInt32(_UseBayeriHailegeStar);
             H_Config.BayeriHailegeStarLevel = _BayeriHailegeStarLevel;
+            H_Config.UseBayeriHailegeStarSelfMob = _UseBayeriHailegeStarSelfMob;
             H_Config.UseSeraParalyze = Convert.ToInt32(_UseSeraParalyze);
             H_Config.SeraParalyzeLevel = _SeraParalyzeLevel;
             H_Config.UseSeraPoisonMist = Convert.ToInt32(_UseSeraPoisonMist);
@@ -685,6 +687,7 @@ namespace AzzyAIConfig
             _BayeriStahlHornLevel = H_Config.BayeriStahlHornLevel;
             _UseBayeriHailegeStar = Convert.ToBoolean(H_Config.UseBayeriHailegeStar);
             _BayeriHailegeStarLevel = H_Config.BayeriHailegeStarLevel;
+            _UseBayeriHailegeStarSelfMob = H_Config.UseBayeriHailegeStarSelfMob;
             _UseSeraParalyze = Convert.ToBoolean(H_Config.UseSeraParalyze);
             _SeraParalyzeLevel = H_Config.SeraParalyzeLevel;
             _UseSeraPoisonMist = Convert.ToBoolean(H_Config.UseSeraPoisonMist);
@@ -1681,6 +1684,33 @@ namespace AzzyAIConfig
                 else
                 {
                     _BayeriHailegeStarLevel = value;
+                }
+            }
+        }
+
+        int _UseBayeriHailegeStarSelfMob = 0;
+        [Category("AutoSkill Options"),
+        Description(
+            "If UseBayeriHailegeStar is enabled, use it when Bayeri is attacked by this " +
+            "many enemies or more. Set to 0 to disable."
+            ),
+        DefaultValue(0)]
+        public int UseBayeriHailegeStarSelfMob
+        {
+            get { return _UseBayeriHailegeStarSelfMob; }
+            set
+            {
+                if (value < 0)
+                {
+                    _UseBayeriHailegeStarSelfMob = 0;
+                }
+                else if (value > 20)
+                {
+                    _UseBayeriHailegeStarSelfMob = 20;
+                }
+                else
+                {
+                    _UseBayeriHailegeStarSelfMob = value;
                 }
             }
         }

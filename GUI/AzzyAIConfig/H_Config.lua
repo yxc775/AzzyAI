@@ -36,6 +36,7 @@ UseBayeriStahlHorn	=1
 BayeriStahlHornLevel	=5
 UseBayeriHailegeStar	=1
 BayeriHailegeStarLevel	=5
+UseBayeriHailegeStarSelfMob	=0
 UseSeraParalyze				=1
 SeraParalyzeLevel			=5
 UseSeraPoisonMist			=1 
