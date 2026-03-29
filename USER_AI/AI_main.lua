@@ -20,6 +20,7 @@ AutoSkillCooldown[MH_SUMMON_LEGION]=0
 AutoSkillCooldown[MH_HEILIGE_STANGE]=0
 AutoSkillCooldown[MH_GLANZEN_SPIES]=0
 AutoSkillCooldown[MH_HEILIGE_PFERD]=0
+HeiligePferdTimeout		=1
 -----------Config checking----------------
 
 function doInit(myid)
@@ -2491,27 +2492,36 @@ function DoAutoBuffs(buffmode)
 	end
 	if SDefensiveTimeout ~=-1 then
 		TraceAI("sdefensive ~= -1")
-		if (GetTick() > SDefensiveTimeout) then
-			local skill,level,opt = GetSDefensiveSkill(MyID)
-			TraceAI("timeout ok "..opt.." "..FormatSkill(skill,level).." "..buffmode)
-			if (skill <= 0) then
-				SDefensiveTimeout = -1
-			elseif level==0 or opt~=buffmode then
+		local skill,level,opt = GetSDefensiveSkill(MyID)
+		TraceAI("timeout ok "..opt.." "..FormatSkill(skill,level).." "..buffmode)
+		if (skill <= 0) then
+			SDefensiveTimeout = -1
+		elseif skill==MH_HEILIGE_PFERD then
+			if HeiligePferdTimeout==nil or HeiligePferdTimeout==-1 then
+				HeiligePferdTimeout=1
+			end
+			if level==0 or opt~=buffmode then
+				-- skill in cooldown or buff mode mismatch
+			elseif GetTick() > HeiligePferdTimeout and (GetSkillInfo(skill,3,level) <= GetV(V_SP,MyID)) then
+				MyBuffSPCosts["SDefensive"]=GetSkillInfo(skill,3,level)
+				DoSkill(skill,level,MyID,5)
+				local rotationDelay,enabledSkills=GetBayeriRotationCycleDelay()
+				-- Scale recast timing with current Bayeri attack rotation configuration.
+				-- Fewer enabled rotation skills => shorter delay between Heilige Pferd casts.
+				if enabledSkills <= 0 or rotationDelay <= 0 then
+					rotationDelay=500
+				end
+				HeiligePferdTimeout = AutoSkillCastTimeout + rotationDelay
+				UpdateTimeoutFile()
+				return
+			end
+		elseif (GetTick() > SDefensiveTimeout) then
+			if level==0 or opt~=buffmode then
 				-- skill in cooldown
 			elseif (GetSkillInfo(skill,3,level) <= GetV(V_SP,MyID)) then
 				MyBuffSPCosts["SDefensive"]=GetSkillInfo(skill,3,level)
 				DoSkill(skill,level,MyID,5)
-				if skill==MH_HEILIGE_PFERD then
-					local rotationDelay,enabledSkills=GetBayeriRotationCycleDelay()
-					-- Scale recast timing with current Bayeri attack rotation configuration.
-					-- Fewer enabled rotation skills => shorter delay between Heilige Pferd casts.
-					if enabledSkills <= 0 or rotationDelay <= 0 then
-						rotationDelay=500
-					end
-					SDefensiveTimeout = AutoSkillCastTimeout + rotationDelay
-				else
-					SDefensiveTimeout = AutoSkillCastTimeout + GetSkillInfo(skill,8,level)
-				end
+				SDefensiveTimeout = AutoSkillCastTimeout + GetSkillInfo(skill,8,level)
 				UpdateTimeoutFile()
 				return
 			end
@@ -3164,6 +3174,7 @@ function FailSkillUse(mode)
 			SOffensiveTimeout=1
 		elseif mode==5 then
 			SDefensiveTimeout=1
+			HeiligePferdTimeout=1
 		elseif mode==6 then
 			SOwnerBuffTimeout=1
 		elseif mode==7 then
@@ -3298,6 +3309,10 @@ function AI(myid)
 	if SDefensiveTimeout-GetTick() > 350000 then
 		logappend("AAI_ERROR","Homun S defensive timeout was "..SDefensiveTimeout.." time is "..GetTick())
 		SDefensiveTimeout=1
+	end
+	if HeiligePferdTimeout-GetTick() > 350000 then
+		logappend("AAI_ERROR","Heilige Pferd timeout was "..HeiligePferdTimeout.." time is "..GetTick())
+		HeiligePferdTimeout=1
 	end
 	if SOwnerBuffTimeout-GetTick() > 6000000 then
 		logappend("AAI_ERROR","Homun S owner buff timeout was "..SOwnerBuffTimeout.." time is "..GetTick())
