@@ -83,12 +83,8 @@ function doInit(myid)
 		end
 		UseBayeriGlanzenSpies=0
 	end
-	if SkillLearned(myid,MH_HEILIGE_PFERD)==false then
-		if UseBayeriHeiligePferd and GetV(V_HOMUNTYPE,myid)==BAYERI then
-			logstring=logstring.."UseBayeriHeiligePferd disabled - you don't have the skill!"
-		end
-		UseBayeriHeiligePferd=0
-	end
+	-- Keep MH_HEILIGE_PFERD behavior aligned with other Bayeri self-cast skills
+	-- (for example MH_GOLDENE_FERSE): do not auto-disable via attack-range probe.
 	if GetV(V_SKILLATTACKRANGE,myid,MH_NEEDLE_OF_PARALYZE) == 1 then
 		if UseSeraParalyze and GetV(V_HOMUNTYPE,myid)==SERA then
 			UseSeraParalyze=0
@@ -3694,7 +3690,7 @@ function AI(myid)
 		CastSkillState=0	
 	elseif clearcastskill==2 then
 			FailSkillUse(CastSkillMode)
-	end
+		end
 	MyLastSP=sp
 	--###COMMAND PROCESSING###
 	local msg	= GetMsg (myid)			-- command
