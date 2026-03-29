@@ -18,6 +18,8 @@ AutoSkillCooldown[MH_LAVA_SLIDE]=0
 AutoSkillCooldown[MH_STEINWAND]=0 	
 AutoSkillCooldown[MH_SUMMON_LEGION]=0
 AutoSkillCooldown[MH_HEILIGE_STANGE]=0
+AutoSkillCooldown[MH_GLANZEN_SPIES]=0
+AutoSkillCooldown[MH_HEILIGE_PFERD]=0
 -----------Config checking----------------
 
 function doInit(myid)
@@ -67,6 +69,18 @@ function doInit(myid)
 			logstring=logstring.."UseBayeriHailegeStar disabled - you don't have the skill!"
 		end
 		UseBayeriHailegeStar=0
+	end
+	if GetV(V_SKILLATTACKRANGE,myid,MH_GLANZEN_SPIES) == 1 then
+		if UseBayeriGlanzenSpies and GetV(V_HOMUNTYPE,myid)==BAYERI then
+			logstring=logstring.."UseBayeriGlanzenSpies disabled - you don't have the skill!"
+		end
+		UseBayeriGlanzenSpies=0
+	end
+	if GetV(V_SKILLATTACKRANGE,myid,MH_HEILIGE_PFERD) == 1 then
+		if UseBayeriHeiligePferd and GetV(V_HOMUNTYPE,myid)==BAYERI then
+			logstring=logstring.."UseBayeriHeiligePferd disabled - you don't have the skill!"
+		end
+		UseBayeriHeiligePferd=0
 	end
 	if GetV(V_SKILLATTACKRANGE,myid,MH_NEEDLE_OF_PARALYZE) == 1 then
 		if UseSeraParalyze and GetV(V_HOMUNTYPE,myid)==SERA then
@@ -827,7 +841,7 @@ function	OnCHASE_ST ()
 			skilltype=v[1]
 				if v[2]~=0 then
 					if IsInAttackSight(MyID,MyEnemy,v[2],v[3])==true then
-						local bayeriMobbedPriority = (v[2] == MH_HEILIGE_STANGE
+						local bayeriMobbedPriority = ((v[2] == MH_HEILIGE_STANGE or v[2] == MH_HEILIGE_PFERD)
 							and UseBayeriHailegeStarSelfMob ~= 0
 							and GetV(V_HOMUNTYPE,MyID) == BAYERI
 							and GetAggroCount(MyID) >= UseBayeriHailegeStarSelfMob)
@@ -1158,7 +1172,7 @@ function OnATTACK_ST ()
 					TraceAI("skilltype ".. skilltype.." MySkillUsedCount "..MySkillUsedCount.." tact_skill ".. tact_skill.." tact_skillclass"..tact_skillclass.."v"..v[1].." "..v[2].." "..v[3])		
 					if v[2]~=0 then
 						if IsInAttackSight(MyID,MyEnemy,v[2],v[3])==true then
-							local bayeriMobbedPriority = (v[2] == MH_HEILIGE_STANGE
+							local bayeriMobbedPriority = ((v[2] == MH_HEILIGE_STANGE or v[2] == MH_HEILIGE_PFERD)
 								and UseBayeriHailegeStarSelfMob ~= 0
 								and GetV(V_HOMUNTYPE,MyID) == BAYERI
 								and GetAggroCount(MyID) >= UseBayeriHailegeStarSelfMob)
