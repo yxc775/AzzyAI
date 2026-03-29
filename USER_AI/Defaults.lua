@@ -77,7 +77,6 @@ BayeriGlanzenSpiesLevel	=10
 UseBayeriHeiligePferd		=1
 BayeriHeiligePferdLevel	=10
 UseBayeriAttackRotation	=1
-UseBayeriHailegeStarSelfMob	=0
 UseBayeriSteinWand			=0
 BayeriSteinWandLevel		=5
 UseSteinWandSelfMob			=2
