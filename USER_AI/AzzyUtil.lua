@@ -1779,7 +1779,7 @@ end
 --#########################
 
 function IsBayeriAttackRotationSkill(skill)
-	return skill==MH_STAHL_HORN or skill==MH_HEILIGE_STANGE or skill==MH_GLANZEN_SPIES or skill==MH_HEILIGE_PFERD
+	return skill==MH_STAHL_HORN or skill==MH_HEILIGE_STANGE or skill==MH_GLANZEN_SPIES
 end
 
 function GetBayeriRotationConfig(index)
@@ -1789,41 +1789,52 @@ function GetBayeriRotationConfig(index)
 		return MH_HEILIGE_STANGE,UseBayeriHailegeStar,BayeriHailegeStarLevel,5
 	elseif index==3 then
 		return MH_GLANZEN_SPIES,UseBayeriGlanzenSpies,BayeriGlanzenSpiesLevel,10
-	elseif index==4 then
-		return MH_HEILIGE_PFERD,UseBayeriHeiligePferd,BayeriHeiligePferdLevel,10
 	end
 	return 0,0,0,0
+end
+
+function GetBayeriRotationCycleDelay()
+	local delay=0
+	local enabled=0
+	for idx=1,3 do
+		local skill,useFlag,configuredLevel,defaultLevel=GetBayeriRotationConfig(idx)
+		if useFlag==1 then
+			enabled=enabled+1
+			local level=defaultLevel
+			if configuredLevel~=nil then
+				level=configuredLevel
+			end
+			delay=delay+GetSkillInfo(skill,4,level)+GetSkillInfo(skill,5,level)*CastTimeRatio+GetSkillInfo(skill,6,level)
+		end
+	end
+	return delay,enabled
 end
 
 function GetBayeriRotationSkill(myid)
 	if GetV(V_HOMUNTYPE,myid)~=BAYERI then
 		return 0,0
 	end
-	if BayeriAttackRotationNext == nil or BayeriAttackRotationNext < 1 or BayeriAttackRotationNext > 4 then
+	if BayeriAttackRotationNext == nil or BayeriAttackRotationNext < 1 or BayeriAttackRotationNext > 3 then
 		BayeriAttackRotationNext=1
 	end
 	local idx=BayeriAttackRotationNext
-	for i=1,4 do
-		local skill,useFlag=GetBayeriRotationConfig(idx)
+	for i=1,3 do
+		local skill,useFlag,configuredLevel,defaultLevel=GetBayeriRotationConfig(idx)
 		if useFlag==1 then
-			break
+			local level=defaultLevel
+			if configuredLevel~=nil then
+				level=configuredLevel
+			end
+			if GetSkillInfo(skill,3,level) <= GetV(V_SP,myid) then
+				if AutoSkillCooldown[skill]==nil or GetTick() >= AutoSkillCooldown[skill] then
+					BayeriAttackRotationNext=idx
+					return skill,level
+				end
+			end
 		end
 		idx=idx+1
-		if idx>4 then
+		if idx>3 then
 			idx=1
-		end
-	end
-	BayeriAttackRotationNext=idx
-	local skill,useFlag,configuredLevel,defaultLevel=GetBayeriRotationConfig(idx)
-	if useFlag==1 then
-		local level=defaultLevel
-		if configuredLevel~=nil then
-			level=configuredLevel
-		end
-		if GetSkillInfo(skill,3,level) <= GetV(V_SP,myid) then
-			if AutoSkillCooldown[skill]==nil or GetTick() >= AutoSkillCooldown[skill] then
-				return skill,level
-			end
 		end
 	end
 	return 0,0
@@ -2124,13 +2135,6 @@ function GetMobSkill(myid)
 				else
 					level=BayeriHailegeStarLevel
 				end
-			elseif htype==BAYERI and UseBayeriHeiligePferd==1 then
-				skill=MH_HEILIGE_PFERD
-				if BayeriHeiligePferdLevel==nil then
-					level=10
-				else
-					level=BayeriHeiligePferdLevel
-				end
 			elseif htype==SERA and UseSeraPoisonMist==1 and PoisonMistMode==0 then
 				skill=MH_POISON_MIST
 				if SeraPoisonMistLevel==nil then
@@ -2239,7 +2243,17 @@ function	GetSDefensiveSkill(myid)
 	local skillopt=0
 	if (IsHomun(myid)==1) then
 		htype=GetV(V_HOMUNTYPE,myid)
-		if (htype==BAYERI and UseBayeriGoldenPherze~=0) then
+		if (htype==BAYERI and UseBayeriHeiligePferd~=0 and MyEnemy~=0) then
+			skill=MH_HEILIGE_PFERD
+			if BayeriHeiligePferdLevel==nil then
+				level=10
+			else
+				level=BayeriHeiligePferdLevel
+			end
+			-- Battle-only scheduling: cast while actively fighting.
+			-- Keep UseBayeriHeiligePferd as on/off flag, force buff mode to berserk/combat (2).
+			skillopt=2
+		elseif (htype==BAYERI and UseBayeriGoldenPherze~=0) then
 			skill=MH_GOLDENE_FERSE
 			if BayeriGoldenPherzeLevel==nil then
 				level=5
@@ -2650,8 +2664,6 @@ function DoSkill(skill,level,target,mode,targx,targy)
 	elseif rotationSkill and skill==MH_HEILIGE_STANGE then
 		BayeriAttackRotationNext=3
 	elseif rotationSkill and skill==MH_GLANZEN_SPIES then
-		BayeriAttackRotationNext=4
-	elseif rotationSkill and skill==MH_HEILIGE_PFERD then
 		BayeriAttackRotationNext=1
 	end
 	if AutoSkillCooldown[skill]~=nil then
