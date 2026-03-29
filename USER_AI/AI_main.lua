@@ -18,6 +18,8 @@ AutoSkillCooldown[MH_LAVA_SLIDE]=0
 AutoSkillCooldown[MH_STEINWAND]=0 	
 AutoSkillCooldown[MH_SUMMON_LEGION]=0
 AutoSkillCooldown[MH_HEILIGE_STANGE]=0
+AutoSkillCooldown[MH_GLANZEN_SPIES]=0
+AutoSkillCooldown[MH_HEILIGE_PFERD]=0
 -----------Config checking----------------
 
 function doInit(myid)
@@ -67,6 +69,18 @@ function doInit(myid)
 			logstring=logstring.."UseBayeriHailegeStar disabled - you don't have the skill!"
 		end
 		UseBayeriHailegeStar=0
+	end
+	if GetV(V_SKILLATTACKRANGE,myid,MH_GLANZEN_SPIES) == 1 then
+		if UseBayeriGlanzenSpies and GetV(V_HOMUNTYPE,myid)==BAYERI then
+			logstring=logstring.."UseBayeriGlanzenSpies disabled - you don't have the skill!"
+		end
+		UseBayeriGlanzenSpies=0
+	end
+	if GetV(V_SKILLATTACKRANGE,myid,MH_HEILIGE_PFERD) == 1 then
+		if UseBayeriHeiligePferd and GetV(V_HOMUNTYPE,myid)==BAYERI then
+			logstring=logstring.."UseBayeriHeiligePferd disabled - you don't have the skill!"
+		end
+		UseBayeriHeiligePferd=0
 	end
 	if GetV(V_SKILLATTACKRANGE,myid,MH_NEEDLE_OF_PARALYZE) == 1 then
 		if UseSeraParalyze and GetV(V_HOMUNTYPE,myid)==SERA then
@@ -826,12 +840,8 @@ function	OnCHASE_ST ()
 
 			skilltype=v[1]
 				if v[2]~=0 then
-					if IsInAttackSight(MyID,MyEnemy,v[2],v[3])==true then
-						local bayeriMobbedPriority = (v[2] == MH_HEILIGE_STANGE
-							and UseBayeriHailegeStarSelfMob ~= 0
-							and GetV(V_HOMUNTYPE,MyID) == BAYERI
-							and GetAggroCount(MyID) >= UseBayeriHailegeStarSelfMob)
-						if (skilltype == MOB_ATK and UseHomunSSkillChase==1 and (AutoMobMode~=0 or bayeriMobbedPriority) and (MySkillUsedCount < tact_skill or tact_skill==SKILL_ALWAYS or (BerserkMode==1 and Berserk_SkillAlways==1))) then
+					if IsInAttackSight(MyID,MyEnemy,v[2],v[3])==true or v[2]==MH_HEILIGE_PFERD then
+						if (skilltype == MOB_ATK and UseHomunSSkillChase==1 and AutoMobMode~=0 and (MySkillUsedCount < tact_skill or tact_skill==SKILL_ALWAYS or (BerserkMode==1 and Berserk_SkillAlways==1))) then
 							local mobskill_level=skill_level
 							if AoEFixedLevel == 1 then
 								mobskill_level=v[3]
@@ -842,7 +852,7 @@ function	OnCHASE_ST ()
 							end
 							mobskillcount=GetMobCount(v[2],math.min(v[3],mobskill_level),MyEnemy,mobmode)
 							--TraceAI("mobskillcount="..mobskillcount.."tact_skillclass="..tact_skillclass.."class_mob="..CLASS_MOB.."AutoMobCount="..AutoMobCount.." "..FormatSkill(v[2],math.min(v[3],mobskill_level)))
-							if (mobskillcount >= AutoMobCount or tact_skillclass == CLASS_MOB or bayeriMobbedPriority) then
+							if (mobskillcount >= AutoMobCount or tact_skillclass == CLASS_MOB) then
 								if (availsp >= GetSkillInfo(v[2],3,math.min(v[3],mobskill_level)))then
 									if (skilltouse[1] < 2) then
 										skilltouse=v
@@ -1157,12 +1167,8 @@ function OnATTACK_ST ()
 					skilltype=v[1]
 					TraceAI("skilltype ".. skilltype.." MySkillUsedCount "..MySkillUsedCount.." tact_skill ".. tact_skill.." tact_skillclass"..tact_skillclass.."v"..v[1].." "..v[2].." "..v[3])		
 					if v[2]~=0 then
-						if IsInAttackSight(MyID,MyEnemy,v[2],v[3])==true then
-							local bayeriMobbedPriority = (v[2] == MH_HEILIGE_STANGE
-								and UseBayeriHailegeStarSelfMob ~= 0
-								and GetV(V_HOMUNTYPE,MyID) == BAYERI
-								and GetAggroCount(MyID) >= UseBayeriHailegeStarSelfMob)
-							if (skilltype == MOB_ATK and UseHomunSSkillAttack==1 and (AutoMobMode~=0 or bayeriMobbedPriority) and (MySkillUsedCount < tact_skill or tact_skill==SKILL_ALWAYS or (BerserkMode==1 and Berserk_SkillAlways==1))) then
+						if IsInAttackSight(MyID,MyEnemy,v[2],v[3])==true or v[2]==MH_HEILIGE_PFERD then
+							if (skilltype == MOB_ATK and UseHomunSSkillAttack==1 and AutoMobMode~=0 and (MySkillUsedCount < tact_skill or tact_skill==SKILL_ALWAYS or (BerserkMode==1 and Berserk_SkillAlways==1))) then
 								local mobskill_level=skill_level
 								if AoEFixedLevel == 1 then
 									mobskill_level=v[3]
@@ -1173,7 +1179,7 @@ function OnATTACK_ST ()
 								end
 								mobskillcount=GetMobCount(v[2],math.min(v[3],mobskill_level),MyEnemy,mobmode)
 								--TraceAI("mobskillcount="..mobskillcount.."tact_skillclass="..tact_skillclass.."class_mob="..CLASS_MOB.."AutoMobCount="..AutoMobCount.." "..FormatSkill(v[2],math.min(v[3],mobskill_level)))
-								if (mobskillcount >= AutoMobCount or tact_skillclass == CLASS_MOB or bayeriMobbedPriority) then
+								if (mobskillcount >= AutoMobCount or tact_skillclass == CLASS_MOB) then
 									if (availsp >= GetSkillInfo(v[2],3,math.min(v[3],mobskill_level)))then
 										if (skilltouse[1] < 2) then
 											skilltouse=v
