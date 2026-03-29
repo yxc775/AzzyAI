@@ -856,7 +856,7 @@ function	OnCHASE_ST ()
 							end
 							mobskillcount=GetMobCount(v[2],math.min(v[3],mobskill_level),MyEnemy,mobmode)
 							--TraceAI("mobskillcount="..mobskillcount.."tact_skillclass="..tact_skillclass.."class_mob="..CLASS_MOB.."AutoMobCount="..AutoMobCount.." "..FormatSkill(v[2],math.min(v[3],mobskill_level)))
-							if (mobskillcount >= AutoMobCount or tact_skillclass == CLASS_MOB or bayeriMobbedPriority) then
+							if (mobskillcount >= AutoMobCount or tact_skillclass == CLASS_MOB) then
 								if (availsp >= GetSkillInfo(v[2],3,math.min(v[3],mobskill_level)))then
 									if (skilltouse[1] < 2) then
 										skilltouse=v
@@ -1187,7 +1187,7 @@ function OnATTACK_ST ()
 								end
 								mobskillcount=GetMobCount(v[2],math.min(v[3],mobskill_level),MyEnemy,mobmode)
 								--TraceAI("mobskillcount="..mobskillcount.."tact_skillclass="..tact_skillclass.."class_mob="..CLASS_MOB.."AutoMobCount="..AutoMobCount.." "..FormatSkill(v[2],math.min(v[3],mobskill_level)))
-								if (mobskillcount >= AutoMobCount or tact_skillclass == CLASS_MOB or bayeriMobbedPriority) then
+								if (mobskillcount >= AutoMobCount or tact_skillclass == CLASS_MOB) then
 									if (availsp >= GetSkillInfo(v[2],3,math.min(v[3],mobskill_level)))then
 										if (skilltouse[1] < 2) then
 											skilltouse=v
