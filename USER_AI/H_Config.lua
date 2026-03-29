@@ -40,6 +40,7 @@ BayeriGlanzenSpiesLevel  = 10
 UseBayeriHeiligePferd    = 1
 BayeriHeiligePferdLevel  = 10
 UseBayeriAttackRotation  = 1
+UseBayeriHailegeStarSelfMob = 2
 UseSeraParalyze          = 0
 SeraParalyzeLevel        = 5
 UseSeraPoisonMist        = 0 

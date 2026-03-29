@@ -841,7 +841,11 @@ function	OnCHASE_ST ()
 			skilltype=v[1]
 				if v[2]~=0 then
 					if IsInAttackSight(MyID,MyEnemy,v[2],v[3])==true then
-						if (skilltype == MOB_ATK and UseHomunSSkillChase==1 and AutoMobMode~=0 and (MySkillUsedCount < tact_skill or tact_skill==SKILL_ALWAYS or (BerserkMode==1 and Berserk_SkillAlways==1))) then
+						local bayeriMobbedPriority = ((v[2] == MH_HEILIGE_STANGE or v[2] == MH_HEILIGE_PFERD)
+							and UseBayeriHailegeStarSelfMob ~= 0
+							and GetV(V_HOMUNTYPE,MyID) == BAYERI
+							and GetAggroCount(MyID) >= UseBayeriHailegeStarSelfMob)
+						if (skilltype == MOB_ATK and UseHomunSSkillChase==1 and (AutoMobMode~=0 or bayeriMobbedPriority) and (MySkillUsedCount < tact_skill or tact_skill==SKILL_ALWAYS or (BerserkMode==1 and Berserk_SkillAlways==1))) then
 							local mobskill_level=skill_level
 							if AoEFixedLevel == 1 then
 								mobskill_level=v[3]
@@ -1168,7 +1172,11 @@ function OnATTACK_ST ()
 					TraceAI("skilltype ".. skilltype.." MySkillUsedCount "..MySkillUsedCount.." tact_skill ".. tact_skill.." tact_skillclass"..tact_skillclass.."v"..v[1].." "..v[2].." "..v[3])		
 					if v[2]~=0 then
 						if IsInAttackSight(MyID,MyEnemy,v[2],v[3])==true then
-							if (skilltype == MOB_ATK and UseHomunSSkillAttack==1 and AutoMobMode~=0 and (MySkillUsedCount < tact_skill or tact_skill==SKILL_ALWAYS or (BerserkMode==1 and Berserk_SkillAlways==1))) then
+							local bayeriMobbedPriority = ((v[2] == MH_HEILIGE_STANGE or v[2] == MH_HEILIGE_PFERD)
+								and UseBayeriHailegeStarSelfMob ~= 0
+								and GetV(V_HOMUNTYPE,MyID) == BAYERI
+								and GetAggroCount(MyID) >= UseBayeriHailegeStarSelfMob)
+							if (skilltype == MOB_ATK and UseHomunSSkillAttack==1 and (AutoMobMode~=0 or bayeriMobbedPriority) and (MySkillUsedCount < tact_skill or tact_skill==SKILL_ALWAYS or (BerserkMode==1 and Berserk_SkillAlways==1))) then
 								local mobskill_level=skill_level
 								if AoEFixedLevel == 1 then
 									mobskill_level=v[3]
