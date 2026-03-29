@@ -1802,22 +1802,27 @@ function GetBayeriRotationSkill(myid)
 	if BayeriAttackRotationNext == nil or BayeriAttackRotationNext < 1 or BayeriAttackRotationNext > 4 then
 		BayeriAttackRotationNext=1
 	end
-	local startIndex=BayeriAttackRotationNext
-	for i=0,3 do
-		local idx=modulo(startIndex+i,4)
-		if idx==0 then
-			idx=4
-		end
-		local skill,useFlag,configuredLevel,defaultLevel=GetBayeriRotationConfig(idx)
+	local idx=BayeriAttackRotationNext
+	for i=1,4 do
+		local skill,useFlag=GetBayeriRotationConfig(idx)
 		if useFlag==1 then
-			local level=defaultLevel
-			if configuredLevel~=nil then
-				level=configuredLevel
-			end
-			if GetSkillInfo(skill,3,level) <= GetV(V_SP,myid) then
-				if AutoSkillCooldown[skill]==nil or GetTick() >= AutoSkillCooldown[skill] then
-					return skill,level
-				end
+			break
+		end
+		idx=idx+1
+		if idx>4 then
+			idx=1
+		end
+	end
+	BayeriAttackRotationNext=idx
+	local skill,useFlag,configuredLevel,defaultLevel=GetBayeriRotationConfig(idx)
+	if useFlag==1 then
+		local level=defaultLevel
+		if configuredLevel~=nil then
+			level=configuredLevel
+		end
+		if GetSkillInfo(skill,3,level) <= GetV(V_SP,myid) then
+			if AutoSkillCooldown[skill]==nil or GetTick() >= AutoSkillCooldown[skill] then
+				return skill,level
 			end
 		end
 	end
