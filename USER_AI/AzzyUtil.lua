@@ -373,7 +373,17 @@ function GetMobCount(skill,level,target,aggro)
 	if skill==0 or level==0 then 
 		return 0
 	end
-	local skillaoe=SkillAOEInfo[skill][1][level]
+	local skillaoedata=SkillAOEInfo[skill]
+	if skillaoedata==nil or skillaoedata[1]==nil then
+		if target~=nil and IsMonster(target)==1 and GetV(V_MOTION,target)~=MOTION_DEAD then
+			return 1
+		end
+		return 0
+	end
+	local skillaoe=skillaoedata[1][level]
+	if skillaoe==nil then
+		skillaoe=skillaoedata[1][table.getn(skillaoedata[1])]
+	end
 	local x,y=GetV(V_POSITION,MyID)
 	if skillaoe==nil then
 		if skill == ML_BRANDISH then
@@ -1768,12 +1778,67 @@ end
 --### GetSkill functions###
 --#########################
 
+function IsBayeriAttackRotationSkill(skill)
+	return skill==MH_STAHL_HORN or skill==MH_HEILIGE_STANGE or skill==MH_GLANZEN_SPIES or skill==MH_HEILIGE_PFERD
+end
+
+function GetBayeriRotationConfig(index)
+	if index==1 then
+		return MH_STAHL_HORN,UseBayeriStahlHorn,BayeriStahlHornLevel,5
+	elseif index==2 then
+		return MH_HEILIGE_STANGE,UseBayeriHailegeStar,BayeriHailegeStarLevel,5
+	elseif index==3 then
+		return MH_GLANZEN_SPIES,UseBayeriGlanzenSpies,BayeriGlanzenSpiesLevel,10
+	elseif index==4 then
+		return MH_HEILIGE_PFERD,UseBayeriHeiligePferd,BayeriHeiligePferdLevel,10
+	end
+	return 0,0,0,0
+end
+
+function GetBayeriRotationSkill(myid)
+	if GetV(V_HOMUNTYPE,myid)~=BAYERI then
+		return 0,0
+	end
+	if BayeriAttackRotationNext == nil or BayeriAttackRotationNext < 1 or BayeriAttackRotationNext > 4 then
+		BayeriAttackRotationNext=1
+	end
+	local idx=BayeriAttackRotationNext
+	for i=1,4 do
+		local skill,useFlag=GetBayeriRotationConfig(idx)
+		if useFlag==1 then
+			break
+		end
+		idx=idx+1
+		if idx>4 then
+			idx=1
+		end
+	end
+	BayeriAttackRotationNext=idx
+	local skill,useFlag,configuredLevel,defaultLevel=GetBayeriRotationConfig(idx)
+	if useFlag==1 then
+		local level=defaultLevel
+		if configuredLevel~=nil then
+			level=configuredLevel
+		end
+		if GetSkillInfo(skill,3,level) <= GetV(V_SP,myid) then
+			if AutoSkillCooldown[skill]==nil or GetTick() >= AutoSkillCooldown[skill] then
+				return skill,level
+			end
+		end
+	end
+	return 0,0
+end
+
 function GetSAtkSkill(myid)
 	local skill = 0
 	local level = 0
 	if (IsHomun(myid)==1) then
 		htype=GetV(V_HOMUNTYPE,myid)
 		if htype > 47 then -- it's a Homun S
+			local rotationSkill,rotationLevel=GetBayeriRotationSkill(myid)
+			if rotationSkill~=0 and rotationLevel~=0 then
+				return rotationSkill,rotationLevel
+			end
 			if htype==EIRA and UseEiraEraseCutter==1 then
 				skill=MH_ERASER_CUTTER
 				if EiraEraseCutterLevel==nil then
@@ -2042,6 +2107,9 @@ function GetMobSkill(myid)
 		if htype <17 then
 			skill=0
 		else -- it's a homun s
+			if htype==BAYERI then
+				return 0,0
+			end
 			if htype==EIRA and UseEiraXenoSlasher==1 then
 				skill=MH_XENO_SLASHER
 				if EiraXenoSlasherLevel==nil then
@@ -2055,6 +2123,13 @@ function GetMobSkill(myid)
 					level=5
 				else
 					level=BayeriHailegeStarLevel
+				end
+			elseif htype==BAYERI and UseBayeriHeiligePferd==1 then
+				skill=MH_HEILIGE_PFERD
+				if BayeriHeiligePferdLevel==nil then
+					level=10
+				else
+					level=BayeriHeiligePferdLevel
 				end
 			elseif htype==SERA and UseSeraPoisonMist==1 and PoisonMistMode==0 then
 				skill=MH_POISON_MIST
@@ -2544,11 +2619,16 @@ function DoSkill(skill,level,target,mode,targx,targy)
 		end
 	end
 	local t=GetTick();
-	delay=AutoSkillDelay + GetSkillInfo(skill,4,level)+GetSkillInfo(skill,5,level)*CastTimeRatio
+	local rotationSkill = IsBayeriAttackRotationSkill(skill)
+	local baseDelay = GetSkillInfo(skill,4,level)+GetSkillInfo(skill,5,level)*CastTimeRatio
+	delay=AutoSkillDelay + baseDelay
+	if rotationSkill then
+		delay=baseDelay
+	end
 	AutoSkillCastTimeout=delay+t
 	if AutoSkillCooldown[skill]~=nil then
 		local cooldown=GetSkillInfo(skill,9,level)
-		if skill==MH_HEILIGE_STANGE then
+		if skill==MH_HEILIGE_STANGE and rotationSkill==false then
 			cooldown=GetSkillInfo(skill,6,level)
 		end
 		AutoSkillCooldown[skill]=t+cooldown+delay
@@ -2561,10 +2641,19 @@ function DoSkill(skill,level,target,mode,targx,targy)
 			AshTimeout[3]=t+GetSkillInfo(skill,9,level)+delay
 		end
 	end
-	if skill~=MH_HEILIGE_STANGE then
+	if rotationSkill==false and skill~=MH_HEILIGE_STANGE then
 		delay = delay + GetSkillInfo(skill,6,level)
 	end
 	AutoSkillTimeout=t+delay
+	if rotationSkill and skill==MH_STAHL_HORN then
+		BayeriAttackRotationNext=2
+	elseif rotationSkill and skill==MH_HEILIGE_STANGE then
+		BayeriAttackRotationNext=3
+	elseif rotationSkill and skill==MH_GLANZEN_SPIES then
+		BayeriAttackRotationNext=4
+	elseif rotationSkill and skill==MH_HEILIGE_PFERD then
+		BayeriAttackRotationNext=1
+	end
 	if AutoSkillCooldown[skill]~=nil then
 		TraceAI("DoSkill: "..skill.." level:"..level.." target:"..target.." mode:"..targetmode.." delay "..delay.." cooldown: "..AutoSkillCooldown[skill]-GetTick())
 	else
