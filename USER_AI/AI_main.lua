@@ -2501,7 +2501,15 @@ function DoAutoBuffs(buffmode)
 			elseif (GetSkillInfo(skill,3,level) <= GetV(V_SP,MyID)) then
 				MyBuffSPCosts["SDefensive"]=GetSkillInfo(skill,3,level)
 				DoSkill(skill,level,MyID,5)
-				SDefensiveTimeout = AutoSkillCastTimeout + GetSkillInfo(skill,8,level)
+				if skill==MH_HEILIGE_PFERD then
+					local rotationDelay=GetBayeriRotationCycleDelay()
+					if rotationDelay < 500 then
+						rotationDelay=500
+					end
+					SDefensiveTimeout = AutoSkillCastTimeout + rotationDelay
+				else
+					SDefensiveTimeout = AutoSkillCastTimeout + GetSkillInfo(skill,8,level)
+				end
 				UpdateTimeoutFile()
 				return
 			end
