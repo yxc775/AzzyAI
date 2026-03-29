@@ -1799,17 +1799,25 @@ function GetBayeriRotationSkill(myid)
 			idx=4
 		end
 		local skill,useFlag,configuredLevel,defaultLevel=GetBayeriRotationConfig(idx)
-		if useFlag==1 then
-			local level=defaultLevel
-			if configuredLevel~=nil then
-				level=configuredLevel
-			end
-			if GetSkillInfo(skill,3,level) <= GetV(V_SP,myid) then
-				if AutoSkillCooldown[skill]==nil or GetTick() >= AutoSkillCooldown[skill] then
-					return skill,level
+			if useFlag==1 then
+				local level=defaultLevel
+				if configuredLevel~=nil then
+					level=configuredLevel
+				end
+				local canUseSkill = true
+				if skill==MH_HEILIGE_PFERD then
+					if MyEnemy==nil or MyEnemy==0 or IsMonster(MyEnemy)~=1 then
+						canUseSkill=false
+					elseif IsInAttackSight(myid,MyEnemy,skill,level)==false then
+						canUseSkill=false
+					end
+				end
+				if canUseSkill and GetSkillInfo(skill,3,level) <= GetV(V_SP,myid) then
+					if AutoSkillCooldown[skill]==nil or GetTick() >= AutoSkillCooldown[skill] then
+						return skill,level
+					end
 				end
 			end
-		end
 	end
 	return 0,0
 end
