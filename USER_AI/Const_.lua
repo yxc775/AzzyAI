@@ -496,6 +496,7 @@ MoveStuckTimeout		= 1500
 MoveRetryTimeout		= 0
 MoveRetryDelay			= 400
 SteinWandPauseTime		= 0
+BayeriAttackRotationNext	= 1
 LastAIDelay				= 0
 MyMaxSP					= 0
 MyBuffSPCosts			= {}
