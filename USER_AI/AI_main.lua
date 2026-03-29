@@ -39,6 +39,13 @@ function doInit(myid)
 	end
 	MyMaxSP=GetV(V_MAXSP,MyID)
 	MyLastSP=GetV(V_SP,MyID)
+	local function SkillLearned(myid,skill)
+		local ok,skillrange=pcall(GetV,V_SKILLATTACKRANGE_LEVEL,myid,skill,1)
+		if ok and type(skillrange)=="number" then
+			return skillrange > 0
+		end
+		return GetV(V_SKILLATTACKRANGE,myid,skill) > 1
+	end
 	local loadtimesuccess = pcall(loadtimeouts)
 	if loadtimesuccess==false then
 		logstring=logstring.."\nfailed to load timeouts for owner "..GetV(V_OWNER,MyID).." if this is the first time you've used this account with AzzyAI, disregard this message"
