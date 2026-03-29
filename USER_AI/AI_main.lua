@@ -2502,8 +2502,10 @@ function DoAutoBuffs(buffmode)
 				MyBuffSPCosts["SDefensive"]=GetSkillInfo(skill,3,level)
 				DoSkill(skill,level,MyID,5)
 				if skill==MH_HEILIGE_PFERD then
-					local rotationDelay=GetBayeriRotationCycleDelay()
-					if rotationDelay < 500 then
+					local rotationDelay,enabledSkills=GetBayeriRotationCycleDelay()
+					-- Scale recast timing with current Bayeri attack rotation configuration.
+					-- Fewer enabled rotation skills => shorter delay between Heilige Pferd casts.
+					if enabledSkills <= 0 or rotationDelay <= 0 then
 						rotationDelay=500
 					end
 					SDefensiveTimeout = AutoSkillCastTimeout + rotationDelay

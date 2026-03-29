@@ -1795,9 +1795,11 @@ end
 
 function GetBayeriRotationCycleDelay()
 	local delay=0
+	local enabled=0
 	for idx=1,3 do
 		local skill,useFlag,configuredLevel,defaultLevel=GetBayeriRotationConfig(idx)
 		if useFlag==1 then
+			enabled=enabled+1
 			local level=defaultLevel
 			if configuredLevel~=nil then
 				level=configuredLevel
@@ -1805,7 +1807,7 @@ function GetBayeriRotationCycleDelay()
 			delay=delay+GetSkillInfo(skill,4,level)+GetSkillInfo(skill,5,level)*CastTimeRatio+GetSkillInfo(skill,6,level)
 		end
 	end
-	return delay
+	return delay,enabled
 end
 
 function GetBayeriRotationSkill(myid)
