@@ -1818,8 +1818,6 @@ function GetBayeriRotationSkill(myid)
 			if skill==MH_HEILIGE_PFERD then
 				if MyEnemy==nil or MyEnemy==0 or IsMonster(MyEnemy)~=1 then
 					canUseSkill=false
-				elseif IsInAttackSight(myid,MyEnemy,skill,level)==false then
-					canUseSkill=false
 				end
 			end
 			if canUseSkill and GetSkillInfo(skill,3,level) <= GetV(V_SP,myid) then
