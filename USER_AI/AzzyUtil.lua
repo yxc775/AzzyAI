@@ -1782,14 +1782,6 @@ function IsBayeriAttackRotationSkill(skill)
 	return skill==MH_STAHL_HORN or skill==MH_HEILIGE_STANGE or skill==MH_GLANZEN_SPIES or skill==MH_HEILIGE_PFERD
 end
 
-function IsBayeriRotationMobSkill(skill)
-	return skill==MH_HEILIGE_STANGE or skill==MH_HEILIGE_PFERD
-end
-
-function IsBayeriRotationSingleSkill(skill)
-	return skill==MH_STAHL_HORN or skill==MH_GLANZEN_SPIES
-end
-
 function GetBayeriRotationConfig(index)
 	if index==1 then
 		return MH_STAHL_HORN,UseBayeriStahlHorn,BayeriStahlHornLevel,5
@@ -1803,8 +1795,8 @@ function GetBayeriRotationConfig(index)
 	return 0,0,0,0
 end
 
-function GetBayeriRotationSkill(myid,mobskill)
-	if UseBayeriAttackRotation~=1 or GetV(V_HOMUNTYPE,myid)~=BAYERI then
+function GetBayeriRotationSkill(myid)
+	if GetV(V_HOMUNTYPE,myid)~=BAYERI then
 		return 0,0
 	end
 	if BayeriAttackRotationNext == nil or BayeriAttackRotationNext < 1 or BayeriAttackRotationNext > 4 then
@@ -1817,33 +1809,25 @@ function GetBayeriRotationSkill(myid,mobskill)
 			idx=4
 		end
 		local skill,useFlag,configuredLevel,defaultLevel=GetBayeriRotationConfig(idx)
-			if useFlag==1 then
-				local skillClassMatch=false
-				if mobskill==1 and IsBayeriRotationMobSkill(skill) then
-					skillClassMatch=true
-				elseif mobskill~=1 and IsBayeriRotationSingleSkill(skill) then
-					skillClassMatch=true
-				end
-				if skillClassMatch==true then
-					local level=defaultLevel
-					if configuredLevel~=nil then
-						level=configuredLevel
-					end
-					local canUseSkill = true
-					if skill==MH_HEILIGE_PFERD then
-						if MyEnemy==nil or MyEnemy==0 or IsMonster(MyEnemy)~=1 then
-							canUseSkill=false
-						elseif IsInAttackSight(myid,MyEnemy,skill,level)==false then
-							canUseSkill=false
-						end
-					end
-					if canUseSkill and GetSkillInfo(skill,3,level) <= GetV(V_SP,myid) then
-						if AutoSkillCooldown[skill]==nil or GetTick() >= AutoSkillCooldown[skill] then
-							return skill,level
-						end
-					end
+		if useFlag==1 then
+			local level=defaultLevel
+			if configuredLevel~=nil then
+				level=configuredLevel
+			end
+			local canUseSkill = true
+			if skill==MH_HEILIGE_PFERD then
+				if MyEnemy==nil or MyEnemy==0 or IsMonster(MyEnemy)~=1 then
+					canUseSkill=false
+				elseif IsInAttackSight(myid,MyEnemy,skill,level)==false then
+					canUseSkill=false
 				end
 			end
+			if canUseSkill and GetSkillInfo(skill,3,level) <= GetV(V_SP,myid) then
+				if AutoSkillCooldown[skill]==nil or GetTick() >= AutoSkillCooldown[skill] then
+					return skill,level
+				end
+			end
+		end
 	end
 	return 0,0
 end
@@ -1854,7 +1838,7 @@ function GetSAtkSkill(myid)
 	if (IsHomun(myid)==1) then
 		htype=GetV(V_HOMUNTYPE,myid)
 		if htype > 47 then -- it's a Homun S
-			local rotationSkill,rotationLevel=GetBayeriRotationSkill(myid,0)
+			local rotationSkill,rotationLevel=GetBayeriRotationSkill(myid)
 			if rotationSkill~=0 and rotationLevel~=0 then
 				return rotationSkill,rotationLevel
 			end
@@ -2126,9 +2110,8 @@ function GetMobSkill(myid)
 		if htype <17 then
 			skill=0
 		else -- it's a homun s
-			local rotationSkill,rotationLevel=GetBayeriRotationSkill(myid,1)
-			if rotationSkill~=0 and rotationLevel~=0 then
-				return rotationSkill,rotationLevel
+			if htype==BAYERI then
+				return 0,0
 			end
 			if htype==EIRA and UseEiraXenoSlasher==1 then
 				skill=MH_XENO_SLASHER
@@ -2639,7 +2622,7 @@ function DoSkill(skill,level,target,mode,targx,targy)
 		end
 	end
 	local t=GetTick();
-	local rotationSkill = IsBayeriAttackRotationSkill(skill) and UseBayeriAttackRotation==1
+	local rotationSkill = IsBayeriAttackRotationSkill(skill)
 	local baseDelay = GetSkillInfo(skill,4,level)+GetSkillInfo(skill,5,level)*CastTimeRatio
 	delay=AutoSkillDelay + baseDelay
 	if rotationSkill then
