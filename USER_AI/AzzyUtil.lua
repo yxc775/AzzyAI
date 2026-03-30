@@ -1767,6 +1767,66 @@ end
 --#########################
 --### GetSkill functions###
 --#########################
+function GetBayeriAttackRotationState()
+	if BayeriAttackRotate == nil then
+		BayeriAttackRotate = 0
+	end
+	return BayeriAttackRotate
+end
+
+function BayeriHasMobSkillReady()
+	local skill,level = GetMobSkill(MyID)
+	return (skill ~= 0 and level ~= 0)
+end
+
+function BayeriHasSAtkSkillReady()
+	local skill,level = GetSAtkSkill(MyID)
+	return (skill ~= 0 and level ~= 0)
+end
+
+function BayeriAllowMobBucket(skillid)
+	if GetV(V_HOMUNTYPE,MyID) ~= BAYERI then
+		return 1
+	end
+	if skillid ~= MH_HEILIGE_STANGE and skillid ~= MH_HEILIGE_PFERD then
+		return 1
+	end
+
+	local hasMob = BayeriHasMobSkillReady()
+	local hasSAtk = BayeriHasSAtkSkillReady()
+
+	if hasMob and hasSAtk then
+		if GetBayeriAttackRotationState() == 0 then
+			return 1
+		else
+			return 0
+		end
+	end
+
+	return 1
+end
+
+function BayeriAllowSAtkBucket(skillid)
+	if GetV(V_HOMUNTYPE,MyID) ~= BAYERI then
+		return 1
+	end
+	if skillid ~= MH_STAHL_HORN and skillid ~= MH_GLANZEN_SPIES then
+		return 1
+	end
+
+	local hasMob = BayeriHasMobSkillReady()
+	local hasSAtk = BayeriHasSAtkSkillReady()
+
+	if hasMob and hasSAtk then
+		if GetBayeriAttackRotationState() == 1 then
+			return 1
+		else
+			return 0
+		end
+	end
+
+	return 1
+end
 
 function GetBayeriSAtkRotationState()
 	if BayeriSAtkRotate == nil then
@@ -2718,6 +2778,12 @@ function DoSkill(skill,level,target,mode,targx,targy)
 		BayeriSAtkRotate = 1
 	elseif skill == MH_GLANZEN_SPIES then
 		BayeriSAtkRotate = 0
+	end
+
+	if skill == MH_HEILIGE_STANGE or skill == MH_HEILIGE_PFERD then
+		BayeriAttackRotate = 1
+	elseif skill == MH_STAHL_HORN or skill == MH_GLANZEN_SPIES then
+		BayeriAttackRotate = 0
 	end
 
 	TraceAI("DoSkill: "..skill.." level:"..level.." target:"..target.." mode:"..targetmode.." delay "..delay)

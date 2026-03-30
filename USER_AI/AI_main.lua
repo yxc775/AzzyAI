@@ -845,7 +845,7 @@ function	OnCHASE_ST ()
 										and UseBayeriHeiligePferdSelfMob ~= 0
 										and GetAggroCount(MyID) >= UseBayeriHeiligePferdSelfMob)
 									))
-						if (skilltype == MOB_ATK and UseHomunSSkillChase==1 and (AutoMobMode~=0 or bayeriMobbedPriority) and (MySkillUsedCount < tact_skill or tact_skill==SKILL_ALWAYS or (BerserkMode==1 and Berserk_SkillAlways==1))) then
+						if (skilltype == MOB_ATK and UseHomunSSkillChase==1 and BayeriAllowMobBucket(v[2])==1 and (AutoMobMode~=0 or bayeriMobbedPriority) and (MySkillUsedCount < tact_skill or tact_skill==SKILL_ALWAYS or (BerserkMode==1 and Berserk_SkillAlways==1))) then
 							local mobskill_level=skill_level
 							if AoEFixedLevel == 1 then
 								mobskill_level=v[3]
@@ -873,7 +873,7 @@ function	OnCHASE_ST ()
 						if (availsp-ReserveSP >= GetSkillInfo(v[2],3,math.min(v[3],skill_level))) then
 							skilltouse=v
 						end
-					elseif (skilltype==S_ATK and UseHomunSSkillChase==1 and (MySkillUsedCount < tact_skill or tact_skill==SKILL_ALWAYS or (BerserkMode==1 and Berserk_SkillAlways==1)) and (tact_skillclass==CLASS_S or tact_skillclass==CLASS_BOTH or tact_skillclass==CLASS_MIN_S or ((tact_skillclass==CLASS_COMBO_1 or tact_skillclass==CLASS_COMBO_2) and v[2]==MH_SONIC_CLAW))) then
+					elseif (skilltype==S_ATK and UseHomunSSkillChase==1 and BayeriAllowSAtkBucket(v[2])==1 and (MySkillUsedCount < tact_skill or tact_skill==SKILL_ALWAYS or (BerserkMode==1 and Berserk_SkillAlways==1)) and (tact_skillclass==CLASS_S or tact_skillclass==CLASS_BOTH or tact_skillclass==CLASS_MIN_S or ((tact_skillclass==CLASS_COMBO_1 or tact_skillclass==CLASS_COMBO_2) and v[2]==MH_SONIC_CLAW))) then
 						if (availsp-ReserveSP >= GetSkillInfo(v[2],3,math.min(v[3],skill_level))) then
 							skilltouse=v
 						end
@@ -1183,7 +1183,7 @@ function OnATTACK_ST ()
 										and UseBayeriHeiligePferdSelfMob ~= 0
 										and GetAggroCount(MyID) >= UseBayeriHeiligePferdSelfMob)
 								))
-							if (skilltype == MOB_ATK and UseHomunSSkillAttack==1 and (AutoMobMode~=0 or bayeriMobbedPriority) and (MySkillUsedCount < tact_skill or tact_skill==SKILL_ALWAYS or (BerserkMode==1 and Berserk_SkillAlways==1))) then
+							if (skilltype == MOB_ATK and UseHomunSSkillAttack==1 and BayeriAllowMobBucket(v[2])==1 and (AutoMobMode~=0 or bayeriMobbedPriority) and (MySkillUsedCount < tact_skill or tact_skill==SKILL_ALWAYS or (BerserkMode==1 and Berserk_SkillAlways==1))) then
 								local mobskill_level=skill_level
 								if AoEFixedLevel == 1 then
 									mobskill_level=v[3]
@@ -1211,7 +1211,7 @@ function OnATTACK_ST ()
 								if (availsp-ReserveSP >= GetSkillInfo(v[2],3,math.min(v[3],skill_level))) then
 									skilltouse=v
 								end
-							elseif (skilltype==S_ATK and UseHomunSSkillAttack==1 and (MySkillUsedCount < tact_skill or tact_skill==SKILL_ALWAYS or (BerserkMode==1 and Berserk_SkillAlways==1)) and (tact_skillclass==CLASS_S or tact_skillclass==CLASS_BOTH or tact_skillclass==CLASS_MIN_S or ((tact_skillclass==CLASS_COMBO_1 or tact_skillclass==CLASS_COMBO_2) and v[2]==MH_SONIC_CLAW))) then
+							elseif (skilltype==S_ATK and UseHomunSSkillAttack==1 and BayeriAllowSAtkBucket(v[2])==1 and (MySkillUsedCount < tact_skill or tact_skill==SKILL_ALWAYS or (BerserkMode==1 and Berserk_SkillAlways==1)) and (tact_skillclass==CLASS_S or tact_skillclass==CLASS_BOTH or tact_skillclass==CLASS_MIN_S or ((tact_skillclass==CLASS_COMBO_1 or tact_skillclass==CLASS_COMBO_2) and v[2]==MH_SONIC_CLAW))) then
 								if (availsp-ReserveSP >= GetSkillInfo(v[2],3,math.min(v[3],skill_level))) then
 									skilltouse=v
 								end
