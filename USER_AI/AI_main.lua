@@ -63,6 +63,12 @@ function doInit(myid)
 		end
 		UseBayeriStahlHorn=0
 	end
+	if GetV(V_SKILLATTACKRANGE,myid,MH_GLANZEN_SPIES) == 1 then
+		if UseBayeriGlanzenSpies and GetV(V_HOMUNTYPE,myid)==BAYERI then
+			logstring=logstring.."UseBayeriGlanzenSpies disabled - you don't have the skill!"
+		end
+		UseBayeriGlanzenSpies=0
+	end
 	if GetV(V_SKILLATTACKRANGE,myid,MH_HEILIGE_STANGE) == 1 then
 		if UseBayeriHailegeStar and GetV(V_HOMUNTYPE,myid)==BAYERI then
 			logstring=logstring.."UseBayeriHailegeStar disabled - you don't have the skill!"

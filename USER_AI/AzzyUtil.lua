@@ -1768,6 +1768,45 @@ end
 --### GetSkill functions###
 --#########################
 
+function GetBayeriSAtkRotationState()
+	if BayeriSAtkRotate == nil then
+		BayeriSAtkRotate = 0
+	end
+	return BayeriSAtkRotate
+end
+
+function GetBayeriSAtkSkillCandidate(skillid)
+	local level = 0
+
+	if GetV(V_HOMUNTYPE,MyID) ~= BAYERI then
+		return 0,0
+	end
+
+	if skillid == MH_STAHL_HORN then
+		if UseBayeriStahlHorn ~= 1 then
+			return 0,0
+		end
+		if BayeriStahlHornLevel == nil then
+			level = 5
+		else
+			level = BayeriStahlHornLevel
+		end
+	elseif skillid == MH_GLANZEN_SPIES then
+		if UseBayeriGlanzenSpies ~= 1 then
+			return 0,0
+		end
+		if BayeriGlanzenSpiesLevel == nil then
+			level = 5
+		else
+			level = BayeriGlanzenSpiesLevel
+		end
+	else
+		return 0,0
+	end
+
+	return skillid,level
+end
+
 function GetSAtkSkill(myid)
 	local skill = 0
 	local level = 0
@@ -1781,13 +1820,20 @@ function GetSAtkSkill(myid)
 				else
 					level=EiraEraseCutterLevel
 				end
-			elseif htype==BAYERI and UseBayeriStahlHorn==1 then
-				skill=MH_STAHL_HORN
-				if BayeriStahlHornLevel==nil then
-					level=5
-				else
-					level=BayeriStahlHornLevel
-				end
+			elseif htype==BAYERI then
+					local hornskill,hornlevel = GetBayeriSAtkSkillCandidate(MH_STAHL_HORN)
+					local spiesskill,spieslevel = GetBayeriSAtkSkillCandidate(MH_GLANZEN_SPIES)
+					if hornskill ~= 0 and spiesskill ~= 0 then
+						if GetBayeriSAtkRotationState() == 0 then
+							skill,level = hornskill,hornlevel
+						else
+							skill,level = spiesskill,spieslevel
+						end
+					elseif hornskill ~= 0 then
+						skill,level = hornskill,hornlevel
+					elseif spiesskill ~= 0 then
+						skill,level = spiesskill,spieslevel
+					end
 			elseif htype==SERA and UseSeraParalyze==1 then
 				skill=MH_NEEDLE_OF_PARALYZE
 				if SeraParalyzeLevel==nil then
@@ -2155,7 +2201,7 @@ function GetMobSkill(myid)
 end
 
 
-function	GetQuickenSkill(myid)
+function GetQuickenSkill(myid)
 	local level = 0
 	local skill = 0
 	if (IsHomun(myid)==1) then
@@ -2660,6 +2706,18 @@ function DoSkill(skill,level,target,mode,targx,targy)
 	else --Combo wasn't used, so kill the timeouts
 		ComboSCTimeout=0
 		ComboSVTimeout=0
+	end
+
+	if skill == MH_HEILIGE_STANGE then
+		BayeriMobRotate = 1
+	elseif skill == MH_HEILIGE_PFERD then
+		BayeriMobRotate = 0
+	end
+
+	if skill == MH_STAHL_HORN then
+		BayeriSAtkRotate = 1
+	elseif skill == MH_GLANZEN_SPIES then
+		BayeriSAtkRotate = 0
 	end
 
 	TraceAI("DoSkill: "..skill.." level:"..level.." target:"..target.." mode:"..targetmode.." delay "..delay)
