@@ -2033,6 +2033,49 @@ function GetSacrificeSkill(myid)
 	return 0,0
 end
 
+function GetBayeriMobRotationState()
+	if BayeriMobRotate == nil then
+		BayeriMobRotate = 0
+	end
+	return BayeriMobRotate
+end
+
+function GetBayeriMobSkillCandidate(skillid)
+	local level = 0
+
+	if GetV(V_HOMUNTYPE,MyID) ~= BAYERI then
+		return 0,0
+	end
+
+	if skillid == MH_HEILIGE_STANGE then
+		if UseBayeriHailegeStar ~= 1 then
+			return 0,0
+		end
+		if BayeriHailegeStarLevel == nil then
+			level = 5
+		else
+			level = BayeriHailegeStarLevel
+		end
+	elseif skillid == MH_HEILIGE_PFERD then
+		if UseBayeriHeiligePferd ~= 1 then
+			return 0,0
+		end
+		if BayeriHeiligePferdLevel == nil then
+			level = 5
+		else
+			level = BayeriHeiligePferdLevel
+		end
+	else
+		return 0,0
+	end
+
+	if AutoSkillCooldown[skillid] ~= nil and GetTick() < AutoSkillCooldown[skillid] then
+		return 0,0
+	end
+
+	return skillid,level
+end
+
 function GetMobSkill(myid)
 	local skill = 0
 	local level = 0
@@ -2049,12 +2092,32 @@ function GetMobSkill(myid)
 				else
 					level=EiraXenoSlasherLevel
 				end
-			elseif htype==BAYERI and UseBayeriHailegeStar==1 then
-				skill=MH_HEILIGE_STANGE
-				if BayeriHailegeStarLevel==nil then
-					level=5
-				else
-					level=BayeriHailegeStarLevel
+			elseif htype==BAYERI then
+				local starskill,starlevel = GetBayeriMobSkillCandidate(MH_HEILIGE_STANGE)
+				local pferdskill,pferdlevel = GetBayeriMobSkillCandidate(MH_HEILIGE_PFERD)
+
+				local starReady = (starskill ~= 0
+					and UseBayeriHailegeStarSelfMob ~= 0
+					and GetAggroCount(MyID) >= UseBayeriHailegeStarSelfMob)
+
+				local pferdReady = (pferdskill ~= 0
+					and UseBayeriHeiligePferdSelfMob ~= 0
+					and GetAggroCount(MyID) >= UseBayeriHeiligePferdSelfMob)
+
+				if starReady and pferdReady then
+					if GetBayeriMobRotationState() == 0 then
+						skill,level = starskill,starlevel
+					else
+						skill,level = pferdskill,pferdlevel
+					end
+				elseif starReady then
+					skill,level = starskill,starlevel
+				elseif pferdReady then
+					skill,level = pferdskill,pferdlevel
+				elseif starskill ~= 0 then
+					skill,level = starskill,starlevel
+				elseif pferdskill ~= 0 then
+					skill,level = pferdskill,pferdlevel
 				end
 			elseif htype==SERA and UseSeraPoisonMist==1 and PoisonMistMode==0 then
 				skill=MH_POISON_MIST

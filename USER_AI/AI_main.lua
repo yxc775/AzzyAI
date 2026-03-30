@@ -18,6 +18,7 @@ AutoSkillCooldown[MH_LAVA_SLIDE]=0
 AutoSkillCooldown[MH_STEINWAND]=0 	
 AutoSkillCooldown[MH_SUMMON_LEGION]=0
 AutoSkillCooldown[MH_HEILIGE_STANGE]=0
+AutoSkillCooldown[MH_HEILIGE_PFERD]=0
 -----------Config checking----------------
 
 function doInit(myid)
@@ -826,11 +827,18 @@ function	OnCHASE_ST ()
 
 			skilltype=v[1]
 				if v[2]~=0 then
-					if IsInAttackSight(MyID,MyEnemy,v[2],v[3])==true then
-						local bayeriMobbedPriority = (v[2] == MH_HEILIGE_STANGE
-							and UseBayeriHailegeStarSelfMob ~= 0
-							and GetV(V_HOMUNTYPE,MyID) == BAYERI
-							and GetAggroCount(MyID) >= UseBayeriHailegeStarSelfMob)
+					local selfMobSkill = (skilltype == MOB_ATK and GetSkillInfo(v[2],7) == 0)
+					if IsInAttackSight(MyID,MyEnemy,v[2],v[3])==true or selfMobSkill then
+						local bayeriMobbedPriority =
+							(GetV(V_HOMUNTYPE,MyID) == BAYERI and (
+								(v[2] == MH_HEILIGE_STANGE
+										and UseBayeriHailegeStarSelfMob ~= 0
+										and GetAggroCount(MyID) >= UseBayeriHailegeStarSelfMob)
+									or
+									(v[2] == MH_HEILIGE_PFERD
+										and UseBayeriHeiligePferdSelfMob ~= 0
+										and GetAggroCount(MyID) >= UseBayeriHeiligePferdSelfMob)
+									))
 						if (skilltype == MOB_ATK and UseHomunSSkillChase==1 and (AutoMobMode~=0 or bayeriMobbedPriority) and (MySkillUsedCount < tact_skill or tact_skill==SKILL_ALWAYS or (BerserkMode==1 and Berserk_SkillAlways==1))) then
 							local mobskill_level=skill_level
 							if AoEFixedLevel == 1 then
@@ -1157,11 +1165,18 @@ function OnATTACK_ST ()
 					skilltype=v[1]
 					TraceAI("skilltype ".. skilltype.." MySkillUsedCount "..MySkillUsedCount.." tact_skill ".. tact_skill.." tact_skillclass"..tact_skillclass.."v"..v[1].." "..v[2].." "..v[3])		
 					if v[2]~=0 then
-						if IsInAttackSight(MyID,MyEnemy,v[2],v[3])==true then
-							local bayeriMobbedPriority = (v[2] == MH_HEILIGE_STANGE
-								and UseBayeriHailegeStarSelfMob ~= 0
-								and GetV(V_HOMUNTYPE,MyID) == BAYERI
-								and GetAggroCount(MyID) >= UseBayeriHailegeStarSelfMob)
+						local selfMobSkill = (skilltype == MOB_ATK and GetSkillInfo(v[2],7) == 0)
+						if IsInAttackSight(MyID,MyEnemy,v[2],v[3])==true or selfMobSkill then
+							local bayeriMobbedPriority =
+								(GetV(V_HOMUNTYPE,MyID) == BAYERI and (
+									(v[2] == MH_HEILIGE_STANGE
+										and UseBayeriHailegeStarSelfMob ~= 0
+										and GetAggroCount(MyID) >= UseBayeriHailegeStarSelfMob)
+									or
+									(v[2] == MH_HEILIGE_PFERD
+										and UseBayeriHeiligePferdSelfMob ~= 0
+										and GetAggroCount(MyID) >= UseBayeriHeiligePferdSelfMob)
+								))
 							if (skilltype == MOB_ATK and UseHomunSSkillAttack==1 and (AutoMobMode~=0 or bayeriMobbedPriority) and (MySkillUsedCount < tact_skill or tact_skill==SKILL_ALWAYS or (BerserkMode==1 and Berserk_SkillAlways==1))) then
 								local mobskill_level=skill_level
 								if AoEFixedLevel == 1 then
