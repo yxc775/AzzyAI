@@ -2049,12 +2049,36 @@ function GetMobSkill(myid)
 				else
 					level=EiraXenoSlasherLevel
 				end
-			elseif htype==BAYERI and UseBayeriHailegeStar==1 then
-				skill=MH_HEILIGE_STANGE
-				if BayeriHailegeStarLevel==nil then
-					level=5
-				else
-					level=BayeriHailegeStarLevel
+			elseif htype==BAYERI then
+				local bayeriMobSkills={}
+				if UseBayeriHailegeStar==1 then
+					local starLevel = BayeriHailegeStarLevel
+					if starLevel==nil then
+						starLevel=5
+					end
+					table.insert(bayeriMobSkills,{MH_HEILIGE_STANGE,starLevel})
+				end
+				if UseBayeriHeiligePferd==1 then
+					local pferdLevel = BayeriHeiligePferdLevel
+					if pferdLevel==nil then
+						pferdLevel=5
+					end
+					table.insert(bayeriMobSkills,{MH_HEILIGE_PFERD,pferdLevel})
+				end
+				local skillCount=#bayeriMobSkills
+				if skillCount > 0 then
+					if BayeriMobRotIndex==nil or BayeriMobRotIndex < 1 or BayeriMobRotIndex > skillCount then
+						BayeriMobRotIndex=1
+					end
+					for i=0,skillCount-1 do
+						local idx=((BayeriMobRotIndex+i-1) % skillCount)+1
+						local ts,tl=bayeriMobSkills[idx][1],bayeriMobSkills[idx][2]
+						if AutoSkillCooldown[ts]==nil or GetTick() >= AutoSkillCooldown[ts] then
+							skill,level=ts,tl
+							BayeriMobRotIndex=(idx % skillCount)+1
+							break
+						end
+					end
 				end
 			elseif htype==SERA and UseSeraPoisonMist==1 and PoisonMistMode==0 then
 				skill=MH_POISON_MIST
