@@ -21,6 +21,17 @@ AutoSkillCooldown[MH_HEILIGE_STANGE]=0
 AutoSkillCooldown[MH_HEILIGE_PFERD]=0
 -----------Config checking----------------
 
+function GetDistanceRectSafe(id1,id2)
+	local x1, y1 = GetV (V_POSITION,id1)
+	local x2, y2 = GetV (V_POSITION,id2)
+	if (x1 == nil or y1 == nil or x2 == nil or y2 == nil or x1 == -1 or x2 == -1) then
+		return 999
+	end
+	local x=x1-x2
+	local y=y1-y2
+	return math.max(math.abs(x),math.abs(y))
+end
+
 function doInit(myid)
 	local logstring="Checking config..."
 	if IsHomun(myid) == 0 then -- if the stupid devs made GetV(V_MERTYPE,id) work i wouldnt need this!
@@ -1300,7 +1311,7 @@ function OnATTACK_ST ()
 			DoSkill(MySkill,MySkillLevel,SkillTarget,-1,SkillTargetX,SkillTargetY)
 		end
 	end
-	if ((UseSkillOnly ~= 1 and UseDanceAttack==1 and GetV(V_SP,MyID) >= DanceMinSP) or (BerserkMode==1 and Berserk_Dance==1) or (panicmode==1 and Panic_UseDanceAttack==1 and HPPercent(MyID) > FleeHP)) and (IsHomun(MyID)==1 and MySkill==0) and GetDistanceRect(MyEnemy,GetV(V_OWNER,MyID)) < 13 then
+	if ((UseSkillOnly ~= 1 and UseDanceAttack==1 and GetV(V_SP,MyID) >= DanceMinSP) or (BerserkMode==1 and Berserk_Dance==1) or (panicmode==1 and Panic_UseDanceAttack==1 and HPPercent(MyID) > FleeHP)) and (IsHomun(MyID)==1 and MySkill==0) and GetDistanceRectSafe(MyEnemy,GetV(V_OWNER,MyID)) < 13 then
 		nx,ny=GetDanceCell(MyAttackStanceX,MyAttackStanceY,MyEnemy)
 		if GetDistanceAPR(GetV(V_OWNER,MyID),nx,ny) >= GetMoveBounds() then
 			logappend("AAI_DANCE","Dance attack canceled, too close to move bounds "..GetDistanceAPR(GetV(V_OWNER,MyID),nx,ny).." "..GetMoveBounds())
@@ -2092,7 +2103,7 @@ function	GetEnemyList (myid,aggro)
 			if (IsNotKS(myid,k)==1 and v[1] > -1) then
 				--TraceAI("Is alive and not a KS")
 				if aggro == 0 or (aggro~=2 and v[2]>0) then 
-					if (GetMoveBounds() >= GetDistanceRect(owner,k)) then
+					if (GetMoveBounds() >= GetDistanceRectSafe(owner,k)) then
 						--TraceAI("Adding to target list: "..k)
 						r={v[1],v[2],tact,casttact}
 						enemys[k] = r
@@ -3742,7 +3753,7 @@ function AI(myid)
 	-- Used only in critical (merc out of MoveBounds) situations
 	-- Otherwise, IDLE_ST handles it
 	
-	local dist2owner=GetDistanceRect(MyID,GetV(V_OWNER,MyID))
+	local dist2owner=GetDistanceRectSafe(MyID,GetV(V_OWNER,MyID))
 	if (MyState ~=FOLLOW_ST and dist2owner > GetMoveBounds()) then
 		MyState=FOLLOW_ST
 	end

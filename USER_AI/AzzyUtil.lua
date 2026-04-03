@@ -1092,6 +1092,9 @@ function IsToRight(id1,id2)
 end
 
 function	GetDistanceP (x1,y1,x2,y2)
+	if (x1 == nil or y1 == nil or x2 == nil or y2 == nil) then
+		return 999
+	end
 	if (x1 == -1 or x2 == -1) then
 		return 999
 	end
@@ -2369,6 +2372,14 @@ function	GetSOwnerBuffSkill(myid)
 			skill=MH_OVERED_BOOST
 			level = 5
 			skillopt=UseEiraOveredBoost
+		elseif	(htype==BAYERI and UseBayeriGoldeneTone~=0) then
+			skill=MH_GOLDENE_TONE
+			if BayeriGoldeneToneLevel==nil then
+				level = 10
+			else
+				level=BayeriGoldeneToneLevel
+			end
+			skillopt=UseBayeriGoldeneTone
 		elseif	(htype==DIETER and UseDieterPyroclastic~=0) then
 			skill=MH_PYROCLASTIC
 			if DieterPyroclasticLevel==nil then
