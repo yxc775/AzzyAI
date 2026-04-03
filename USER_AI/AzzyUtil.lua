@@ -2369,6 +2369,14 @@ function	GetSOwnerBuffSkill(myid)
 			skill=MH_OVERED_BOOST
 			level = 5
 			skillopt=UseEiraOveredBoost
+		elseif	(htype==BAYERI and UseBayeriGoldenTone~=0) then
+			skill=MH_GOLDENE_TONE
+			if BayeriGoldenToneLevel==nil then
+				level = 10
+			else
+				level=BayeriGoldenToneLevel
+			end
+			skillopt=UseBayeriGoldenTone
 		elseif	(htype==DIETER and UseDieterPyroclastic~=0) then
 			skill=MH_PYROCLASTIC
 			if DieterPyroclasticLevel==nil then
