@@ -144,3 +144,4 @@ HealOwnerBreeze          = 0
 SteinWandTelePause       = 0
 DoNotAttackMoving        = 0
 UseSmartBulwark          = 0
+FilerMoonlightLevel = 0
